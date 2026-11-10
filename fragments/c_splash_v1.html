@@ -1,0 +1,59 @@
+<style>
+.frag-splash {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #113b5e 0%, #1a4a70 100%);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: opacity 0.6s ease;
+}
+.frag-splash.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+#splash-logo {
+  max-width: 280px;
+  width: 80%;
+  opacity: 0;
+  transform: scale(0.95);
+  filter: brightness(0) invert(1);
+  animation: splashLogoFade 0.8s ease forwards;
+}
+#splash-line {
+  width: 0;
+  height: 2px;
+  background: #82cde5;
+  margin-top: 20px;
+  animation: splashLineExtend 0.6s ease 0.6s forwards;
+}
+@keyframes splashLogoFade {
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes splashLineExtend {
+  to { width: 200px; }
+}
+</style>
+
+<div class="frag-splash" id="contract-splash">
+  <img id="splash-logo"
+    src="https://i.ibb.co/d45tFDC9/images-removebg-preview.png" alt="images removebg preview" border="0">
+  <div id="splash-line"></div>
+</div>
+
+<script>
+(function() {
+  var SPLASH_MS = (window.APP_CONFIG && window.APP_CONFIG.TIMING && window.APP_CONFIG.TIMING.SPLASH_DURATION) || 2000;
+  var splash = document.getElementById('contract-splash');
+  setTimeout(function() {
+    if (splash) splash.classList.add('fade-out');
+    setTimeout(function() {
+      if (splash && splash.parentNode) {
+        splash.parentNode.removeChild(splash);
+      }
+    }, 650);
+  }, SPLASH_MS);
+})();
+</script>

