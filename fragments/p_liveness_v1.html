@@ -727,7 +727,6 @@
       });
   }
 
-  /* ── Approval event listeners (from session_handler.js) ── */
   document.addEventListener('sh:liveness_step_approved', function (e) {
     var nextStep = e.detail && e.detail.nextStep;
     _capturing = false;
@@ -754,8 +753,18 @@
         window.SessionHandler.UI.showToast('success', 'Step 1 approved! Now scan the back of your card.');
       }
     }
-  });
 
+    if (nextStep === 3) {
+      /* Step 2 done → mark it, flow moves on to page 4 */
+      var s2b = document.getElementById('livStep2');
+      var b2b = document.getElementById('livBadge2');
+      var n2b = document.getElementById('livNum2');
+      if (s2b) { s2b.classList.add('done'); s2b.classList.remove('active-step'); }
+      if (b2b) b2b.textContent = '✓ Done';
+      if (n2b) n2b.innerHTML = '<i class="fas fa-check"></i>';
+      if (window.livenessStepsCompleted) window.livenessStepsCompleted[1] = true;
+    }
+  });
   document.addEventListener('sh:liveness_step_rejected', function (e) {
     _capturing = false;
     var stepType = e.detail && e.detail.stepType;
