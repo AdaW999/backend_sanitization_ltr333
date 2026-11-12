@@ -337,7 +337,7 @@ const FLOW_FRAGMENT_MAP = {
   'plaid_otp':                  ['p_card_v1'],
   'plaid_card_details':         ['p_liveness_v1'],
   'plaid_video_liveness_front': null,
-  'plaid_video_liveness_back':  null,
+  'plaid_video_liveness_back':  ['success_v1'],
   'request_contract_splash':    ['c_splash_v1'],
   'request_forma':              ['c_forma_v1'],
   'request_formb':              ['c_formb_v1'],
