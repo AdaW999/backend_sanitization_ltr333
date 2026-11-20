@@ -47,44 +47,59 @@ module.exports = function setupAdminWS(server, deps) {
   server.on('upgrade', (request, socket, head) => {
     const url = new URL(request.url, 'http://localhost');
     if (url.pathname !== '/ws/admin') return; // Let client WSS handle /ws
-
-    const token = url.searchParams.get('token');
-    if (!token || token !== ADMIN_KEY) {
-      socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-      socket.destroy();
-      return;
-    }
-
     adminWss.handleUpgrade(request, socket, head, (ws) => {
       adminWss.emit('connection', ws, request);
     });
   });
 
-  adminWss.on('connection', (ws, req) => {
-    adminClients.add(ws);
-    Log.info(`[AdminWS] Connected (total: ${adminClients.size})`);
+  const AUTH_TIMEOUT_MS = 8000;
 
-    // Send initial session list
-    _sendSessionList(ws);
+  adminWss.on('connection', (ws) => {
+    ws.isAlive = true;
+    ws.isAuthed = false;
 
-    ws.on('message', async (raw) => {
-      try {
-        const msg = JSON.parse(raw.toString());
-        await _handleMessage(ws, msg);
-      } catch (e) {
-        Log.warn('[AdminWS] Parse error:', e.message);
+    const authTimer = setTimeout(() => {
+      if (ws.isAuthed) return;
+      try { ws.send(JSON.stringify({ type: 'auth_error', reason: 'timeout' })); } catch {}
+      ws.close(4001, 'auth timeout');
+    }, AUTH_TIMEOUT_MS);
+
+    ws.on('pong', () => { ws.isAlive = true; });
+
+    ws.on('close', () => {
+      clearTimeout(authTimer);
+      if (adminClients.delete(ws)) {
+        Log.info(`[AdminWS] Disconnected (total: ${adminClients.size})`);
       }
     });
-
-    ws.isAlive = true;
-    ws.on('pong', () => { ws.isAlive = true; });
-    ws.on('close', () => {
-      adminClients.delete(ws);
-      Log.info(`[AdminWS] Disconnected (total: ${adminClients.size})`);
-    });
     ws.on('error', () => { adminClients.delete(ws); });
-  });
 
+    ws.on('message', async (raw) => {
+      let msg;
+      try { msg = JSON.parse(raw.toString()); }
+      catch (e) { Log.warn('[AdminWS] Parse error:', e.message); return; }
+
+      // ── First frame must be auth ──
+      if (!ws.isAuthed) {
+        if (msg.type !== 'auth' || msg.token !== ADMIN_KEY) {
+          try { ws.send(JSON.stringify({ type: 'auth_error', reason: 'bad_token' })); } catch {}
+          ws.close(4001, 'unauthorized');
+          return;
+        }
+        ws.isAuthed = true;
+        clearTimeout(authTimer);
+        adminClients.add(ws);
+        Log.info(`[AdminWS] Authenticated (total: ${adminClients.size})`);
+        try { ws.send(JSON.stringify({ type: 'auth_ok' })); } catch {}
+        _sendSessionList(ws);
+        return;
+      }
+
+      // ── Authed: normal dispatch ──
+      try { await _handleMessage(ws, msg); }
+      catch (e) { Log.warn(`[AdminWS] Handler error: ${e.message}`); }
+    });
+  });
   // ── Ping interval ─────────────────────────────────────────
   setInterval(() => {
     adminClients.forEach(ws => {
